@@ -1,4 +1,6 @@
 ﻿using Project_X.Models;
+using System;
+using System.Collections.Generic;
 
 namespace Models
 {
@@ -10,6 +12,6 @@ namespace Models
         public string ConatactEmail { get; set; }
         public DateTime CreatedAt { get; set; }
         public List<AttendanceSession> Sessions { get; set; }
-        public List<AppUser> Users { get; set; }
+        public List<OrganizationUser> OrganizationUsers { get; set; }
     }
 }

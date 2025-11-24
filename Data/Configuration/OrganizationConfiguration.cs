@@ -14,11 +14,6 @@ namespace Project_X.Data.Configuration
                 .WithOne(s => s.Organization)
                 .HasForeignKey(s => s.OrganizationId)
                 .OnDelete(DeleteBehavior.Cascade);
-            builder.HasMany(o => o.Users)
-                .WithOne(u => u.Organization)
-                .HasForeignKey(u => u.OrganizationId)
-                .OnDelete(DeleteBehavior.Cascade);
-
         }
     }
 }
