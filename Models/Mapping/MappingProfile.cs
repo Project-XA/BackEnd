@@ -8,13 +8,15 @@ namespace Project_X.Models.Mapping
     {
         public MappingProfile()
         {
-            CreateMap<AppUser,UserRegisterDTO>().ReverseMap()
-                .ForMember(dest=>dest.CreatedAt,opt=>opt
-                .MapFrom(src=> DateTime.Now));
+           CreateMap<UserRegisterDTO,AppUser>()
+                .ForMember(dest=>dest.CreatedAt,opt=>opt.MapFrom(src=>DateTime.UtcNow));
 
-            CreateMap<Organization,CreateOrganizationDTO>().ReverseMap()
-                .ForMember(dest=>dest.CreatedAt,opt=>opt
-                .MapFrom(src=> DateTime.Now));
+            CreateMap<AppUser, UserRegisterDTO>();
+
+            CreateMap<Organization, CreateOrganizationDTO>();
+
+            CreateMap<CreateOrganizationDTO, Organization>()
+                .ForMember(dest=>dest.CreatedAt,opt=>opt.MapFrom(src=>DateTime.UtcNow));
         }
     }
 }
