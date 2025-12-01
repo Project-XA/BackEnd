@@ -1,13 +1,16 @@
 
 using DotNetEnv;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Models;
 using Project_X.Data.Context;
 using Project_X.Data.Repository;
 using Project_X.Data.UnitOfWork;
 using Project_X.Models.Mapping;
+using System.Text;
 
 namespace Project_X
 {
@@ -37,6 +40,24 @@ namespace Project_X
             builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             builder.Services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
             builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+            var jwtSecurityKey = Environment.GetEnvironmentVariable("SecurityKey");
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecurityKey))
+                };
+            });
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
