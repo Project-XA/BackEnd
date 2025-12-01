@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using Project_X.Data.Context;
+using Project_X.Data.Repository;
+using Project_X.Data.UnitOfWork;
 
 namespace Project_X
 {
@@ -30,7 +32,8 @@ namespace Project_X
             builder.Services.AddIdentity<AppUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppDbConext>()
                 .AddDefaultTokenProviders();
-
+            builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            builder.Services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
