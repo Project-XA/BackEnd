@@ -14,6 +14,7 @@ namespace Project_X.Data.Context
         public DbSet<AttendanceSession> AttendanceSessions { get; set; }
         public DbSet<LocationBeacon> Beacons { get; set; }
         public DbSet<VerificationSession> VerificationSessions { get; set; }
+        public DbSet<Hall> Halls { get; set; }
         public AppDbConext(DbContextOptions dbContextOptions)
             : base(dbContextOptions) { }
 
