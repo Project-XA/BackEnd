@@ -1,4 +1,5 @@
 
+using ASH_Translation.Services;
 using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -10,7 +11,9 @@ using Project_X.Data.Context;
 using Project_X.Data.Repository;
 using Project_X.Data.UnitOfWork;
 using Project_X.Models.Mapping;
+using Project_X.Services;
 using System.Text;
+using System.Threading.RateLimiting;
 
 namespace Project_X
 {
@@ -58,6 +61,34 @@ namespace Project_X
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecurityKey))
                 };
             });
+            builder.Services.AddRateLimiter(options =>
+            {
+                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+                options.AddPolicy("OtpPolicy", httpContext =>
+                    RateLimitPartition.GetFixedWindowLimiter(
+                        partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "anonymous",
+                        factory: _ => new FixedWindowRateLimiterOptions
+                        {
+                            AutoReplenishment = true,
+                            PermitLimit = 5,
+                            Window = TimeSpan.FromMinutes(5),
+                            QueueLimit = 0,
+                            QueueProcessingOrder = QueueProcessingOrder.OldestFirst
+                        }
+                    )
+                );
+            });
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("MyPolicy", policy =>
+                {
+                    policy.AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
+
+            builder.Services.AddScoped<IEmailService, EmailService>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -68,10 +99,9 @@ namespace Project_X
             }
 
             app.UseHttpsRedirection();
-
+            app.UseCors("MyPolicy");
+            app.UseRateLimiter();
             app.UseAuthorization();
-
-
             app.MapControllers();
 
             app.Run();

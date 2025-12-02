@@ -2,12 +2,18 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using Models;
+using Project_X.Data.UnitOfWork;
+using Project_X.Models;
 using Project_X.Models.DTOs;
 using Project_X.Models.Response;
+using Project_X.Services;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Project_X.Controllers
@@ -19,11 +25,15 @@ namespace Project_X.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IMapper _mapper;
-        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IMapper mapper)
+        public readonly IUnitOfWork _unitOfWork;
+        public readonly IEmailService _emailService;
+        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IMapper mapper, IUnitOfWork unitOfWork, IEmailService emailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
+            _emailService = emailService;
         }
         [HttpPost("Register")]
         public async Task<IActionResult> Register(UserRegisterDTO RegisterDTO)
@@ -104,6 +114,72 @@ namespace Project_X.Controllers
             var responseFail = ApiRepsonse.FailureResponse("Invalid Email or Password", new List<string> { "Invalid Email or Password" });
             return BadRequest(responseFail);
         }
-    }
+        [HttpPost("Forgot-Password")]
+        [EnableRateLimiting("OtpPolicy")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordDTO forgotPasswordDTO)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+                var responseFail = ApiRepsonse.FailureResponse("Invalid Email", errors);
+                return BadRequest(responseFail);
+            }
+            var user =await _userManager.FindByEmailAsync(forgotPasswordDTO.Email);
+            if (user != null)
+            {
+                var otp = RandomNumberGenerator.GetInt32(100000, 1000000).ToString();
+                var otpEntry = new OTP
+                {
+                    Email = forgotPasswordDTO.Email,
+                    Otp = otp,
+                    ExpirationTime = DateTime.UtcNow.AddMinutes(10),
+                    IsUsed = false,
+                };
+                await _unitOfWork.OTPs.AddAsync(otpEntry);
+                int isSuccess = await _unitOfWork.SaveAsync();
+                if (isSuccess == 0) 
+                {
+                    var responseFail = ApiRepsonse.FailureResponse("UnExpected Error");
+                    return BadRequest(responseFail);
+                }
+                var subject = "Password Reset OTP";
+                var body = $@"
+                <div style='font-family:Segoe UI,Arial,sans-serif; font-size:14px; color:#1f2937;'>
+                    <div style='max-width:560px; margin:0 auto; padding:24px; border:1px solid #e5e7eb; border-radius:8px;'>
+                        <h2 style='margin:0 0 16px 0; color:#111827;'>Project X</h2>
+                        <p>We received a request to reset the password for your account.</p>
+                        <p>Please use the following one-time verification code to continue:</p>
+                        <div style='margin:16px 0; padding:16px; background:#f9fafb; border:1px dashed #d1d5db; border-radius:6px; text-align:center;'>
+                            <span style='font-size:22px; letter-spacing:4px; font-weight:700; color:#111827;'>{otp}</span>
+                        </div>
+                        <p>This code will expire in <strong>10 minutes</strong>.</p>
+                        <p>If you did not request a password reset, you can safely ignore this email.</p>
+                        <p style='margin-top:24px;'>Regards,<br/>Project_X Team</p>
+                    </div>
+                    <p style='margin-top:12px; font-size:12px; color:#6b7280;'>This is an automated message. Please do not reply.</p>
+                </div>";
+                await _emailService.SendEmailAsync(forgotPasswordDTO.Email, subject, body);
+            }
+            var response = ApiRepsonse.SuccessResponse("If your email exists, an OTP will be sent.");
+            return Ok(response);
+        }
+        //[HttpPost("verify-rest-password-otp")]
+        //[EnableRateLimiting("OtpPolicy")]
+        //public async Task<IActionResult> VerifyRestPasswordOTP(VerifyOtpResetPasswordDto verifDto)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        var errors = ModelState.Values.SelectMany(v => v.Errors)
+        //            .Select(e => e.ErrorMessage).ToList();
+        //        var responseFail = ApiRepsonse.FailureResponse("Invalid Data", errors);
+        //        return BadRequest(responseFail);
+        //    }
+        //    var user = await _userManager.FindByEmailAsync(verifDto.Email);
 
+
+        //}
+    }
+   
 }

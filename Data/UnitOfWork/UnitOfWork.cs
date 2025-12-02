@@ -2,6 +2,8 @@
 using Project_X.Data.Context;
 using Project_X.Data.Repository;
 using Project_X.Models;
+using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 
 namespace Project_X.Data.UnitOfWork
 {
@@ -15,6 +17,7 @@ namespace Project_X.Data.UnitOfWork
         public IRepository<LocationBeacon> Beacons { get; }
         public IRepository<VerificationSession> VerificationSessions { get; }
         public IRepository<Hall> Halls { get; }
+        public IRepository<OTP> OTPs { get; }
 
         public UnitOfWork(AppDbConext context)
         {
@@ -26,15 +29,17 @@ namespace Project_X.Data.UnitOfWork
             Beacons = new Repository<LocationBeacon>(_context);
             VerificationSessions = new Repository<VerificationSession>(_context);
             Halls = new Repository<Hall>(_context);
+            OTPs = new Repository<OTP>(_context);
         }
-        public void Dispose()
-        {
-          _context.Dispose();
-        }
-
+    
         public async Task<int> SaveAsync()
         {
            return await _context.SaveChangesAsync();
+        }
+
+        void IDisposable.Dispose()
+        {
+            _context.Dispose();
         }
     }
 }

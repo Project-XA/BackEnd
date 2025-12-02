@@ -13,6 +13,7 @@ namespace Project_X.Data.UnitOfWork
         public IRepository<LocationBeacon> Beacons { get; }
         public IRepository<VerificationSession> VerificationSessions { get; }
         public IRepository<Hall> Halls { get; }
+        public IRepository<OTP> OTPs { get; }
         Task<int> SaveAsync();
     }
 }
