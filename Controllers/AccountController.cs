@@ -41,16 +41,16 @@ namespace Project_X.Controllers
             if (!ModelState.IsValid)
             {
                 var errors = ModelState
-                    .Values.SelectMany(v=>v.Errors)
-                    .Select(e=>e.ErrorMessage)
+                    .Values.SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
                     .ToList();
-                var response = ApiRepsonse.FailureResponse("Inavlid Data", errors);
+                var response = ApiResponse.FailureResponse("Inavlid Data", errors);
                 return BadRequest(response);
             }
-            var user  = await _userManager.FindByEmailAsync(RegisterDTO.Email);
-            if(user != null)
+            var user = await _userManager.FindByEmailAsync(RegisterDTO.Email);
+            if (user != null)
             {
-                var response = ApiRepsonse.FailureResponse("Email is already registered");
+                var response = ApiResponse.FailureResponse("Email is already registered");
                 return BadRequest(response);
             }
             var newUser = _mapper.Map<AppUser>(RegisterDTO);
@@ -58,15 +58,15 @@ namespace Project_X.Controllers
             if (!result.Succeeded)
             {
                 var errors = result.Errors.Select(e => e.Description).ToList();
-                var response = ApiRepsonse.FailureResponse("Registration Failed", errors);
+                var response = ApiResponse.FailureResponse("Registration Failed", errors);
                 return BadRequest(response);
             }
-           var responseSuccess = ApiRepsonse.SuccessResponse("Registration Successful",new
-           {
+            var responseSuccess = ApiResponse.SuccessResponse("Registration Successful", new
+            {
                 newUser.Id,
                 newUser.UserName,
                 newUser.Email
-           });
+            });
             return Ok(responseSuccess);
         }
         [HttpPost("Login")]
@@ -77,7 +77,7 @@ namespace Project_X.Controllers
                 var errors = ModelState.Values.SelectMany(v => v.Errors)
                     .Select(e => e.ErrorMessage)
                     .ToList();
-                var response = ApiRepsonse.FailureResponse("Invalid Data", errors);
+                var response = ApiResponse.FailureResponse("Invalid Data", errors);
                 return BadRequest(response);
             }
             var user = await _userManager.FindByEmailAsync(loginDTO.Email);
@@ -107,11 +107,11 @@ namespace Project_X.Controllers
                     );
                     var loginToken = new JwtSecurityTokenHandler().
                         WriteToken(token);
-                    var response = ApiRepsonse.SuccessResponse("Login done Successfully",loginToken);
+                    var response = ApiResponse.SuccessResponse("Login done Successfully", loginToken);
                     return Ok(response);
                 }
             }
-            var responseFail = ApiRepsonse.FailureResponse("Invalid Email or Password", new List<string> { "Invalid Email or Password" });
+            var responseFail = ApiResponse.FailureResponse("Invalid Email or Password", new List<string> { "Invalid Email or Password" });
             return BadRequest(responseFail);
         }
         [HttpPost("Forgot-Password")]
@@ -123,10 +123,10 @@ namespace Project_X.Controllers
                 var errors = ModelState.Values.SelectMany(v => v.Errors)
                     .Select(e => e.ErrorMessage)
                     .ToList();
-                var responseFail = ApiRepsonse.FailureResponse("Invalid Email", errors);
+                var responseFail = ApiResponse.FailureResponse("Invalid Email", errors);
                 return BadRequest(responseFail);
             }
-            var user =await _userManager.FindByEmailAsync(forgotPasswordDTO.Email);
+            var user = await _userManager.FindByEmailAsync(forgotPasswordDTO.Email);
             if (user != null)
             {
                 var otp = RandomNumberGenerator.GetInt32(100000, 1000000).ToString();
@@ -139,9 +139,9 @@ namespace Project_X.Controllers
                 };
                 await _unitOfWork.OTPs.AddAsync(otpEntry);
                 int isSuccess = await _unitOfWork.SaveAsync();
-                if (isSuccess == 0) 
+                if (isSuccess == 0)
                 {
-                    var responseFail = ApiRepsonse.FailureResponse("UnExpected Error");
+                    var responseFail = ApiResponse.FailureResponse("UnExpected Error");
                     return BadRequest(responseFail);
                 }
                 var subject = "Password Reset OTP";
@@ -162,24 +162,47 @@ namespace Project_X.Controllers
                 </div>";
                 await _emailService.SendEmailAsync(forgotPasswordDTO.Email, subject, body);
             }
-            var response = ApiRepsonse.SuccessResponse("If your email exists, an OTP will be sent.");
+            var response = ApiResponse.SuccessResponse("If your email exists, an OTP will be sent.");
             return Ok(response);
         }
-        //[HttpPost("verify-rest-password-otp")]
-        //[EnableRateLimiting("OtpPolicy")]
-        //public async Task<IActionResult> VerifyRestPasswordOTP(VerifyOtpResetPasswordDto verifDto)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        var errors = ModelState.Values.SelectMany(v => v.Errors)
-        //            .Select(e => e.ErrorMessage).ToList();
-        //        var responseFail = ApiRepsonse.FailureResponse("Invalid Data", errors);
-        //        return BadRequest(responseFail);
-        //    }
-        //    var user = await _userManager.FindByEmailAsync(verifDto.Email);
-
-
-        //}
+        [HttpPost("verify-rest-password-otp")]
+        [EnableRateLimiting("OtpPolicy")]
+        public async Task<IActionResult> VerifyRestPasswordOTP(VerifyOtpResetPasswordDto verifDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage).ToList();
+                var responseFail = ApiResponse.FailureResponse("Invalid Data", errors);
+                return BadRequest(responseFail);
+            }
+            var otp =await _unitOfWork.OTPs.GetValidOtpByEmailAsync(verifDto.Email, verifDto.Otp);
+            if(otp == null)
+            {
+                var responseFail = ApiResponse.FailureResponse("Inavlid OTP",new List<string> {"Invalid or expired OTP"});
+                return BadRequest(responseFail);
+            }
+            var user = await _userManager.FindByEmailAsync(verifDto.Email);
+            if (user == null)
+            {
+                var responseFail = ApiResponse.FailureResponse("User not found", new List<string> { "User not found" });
+                return BadRequest(responseFail);
+            }
+            var resetToken =await _userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _userManager.ResetPasswordAsync(user, resetToken, verifDto.NewPassword);
+            if (!result.Succeeded)
+            {
+                var errors = result.Errors
+                    .Select(e=>e.Description)
+                    .ToList();
+                var responseFail = ApiResponse.FailureResponse("Unexpected Error Happend", errors);
+                return BadRequest(responseFail);
+            }
+            otp.IsUsed = true;
+            await _unitOfWork.SaveAsync();
+            var responseSuccess = ApiResponse.SuccessResponse("Password Reset Successfully");
+            return Ok(responseSuccess);
+        }
     }
-   
+
 }

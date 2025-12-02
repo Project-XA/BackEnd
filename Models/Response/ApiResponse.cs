@@ -1,24 +1,24 @@
 ﻿namespace Project_X.Models.Response
 {
-    public class ApiRepsonse
+    public class ApiResponse
     {
         public bool Success { get; set; }
         public string Message { get; set; }
         public object Data { get; set; }
         public List<string> Errors { get; set; } = new();
 
-        public static ApiRepsonse SuccessResponse(string message, object data = null)
+        public static ApiResponse SuccessResponse(string message, object data = null)
         {
-            return new ApiRepsonse
+            return new ApiResponse
             {
                 Success = true,
                 Message = message,
                 Data = data,
             };
         }
-        public static ApiRepsonse FailureResponse(string message, List<string> errors = null)
+        public static ApiResponse FailureResponse(string message, List<string> errors = null)
         {
-            return new ApiRepsonse
+            return new ApiResponse
             {
                 Success = false,
                 Message = message,

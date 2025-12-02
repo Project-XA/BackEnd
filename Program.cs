@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Models;
 using Project_X.Data.Context;
+using Project_X.Data.Repositories;
 using Project_X.Data.Repository;
 using Project_X.Data.UnitOfWork;
 using Project_X.Models.Mapping;

@@ -1,13 +1,14 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
 using Project_X.Data.Context;
+using Project_X.Data.Repositories;
 using System.Threading.Tasks;
 
 namespace Project_X.Data.Repository
 {
     public class Repository<T> : IRepository<T> where T : class
     {
-        private readonly AppDbConext _context;
+        protected readonly AppDbConext _context;
         private readonly DbSet<T> _dbSet;
         private AppDbConext context;
 
