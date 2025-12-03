@@ -55,17 +55,21 @@ namespace Project_X.Controllers
             }
             var newUser = _mapper.Map<AppUser>(RegisterDTO);
             var result = await _userManager.CreateAsync(newUser, RegisterDTO.Password);
-            if (!result.Succeeded)
+            var roleResult = await _userManager.AddToRoleAsync(newUser, RegisterDTO.Role.ToString());
+            if (!result.Succeeded || !roleResult.Succeeded)
             {
                 var errors = result.Errors.Select(e => e.Description).ToList();
-                var response = ApiResponse.FailureResponse("Registration Failed", errors);
+                var response = ApiResponse.FailureResponse("Registration Failed Due to Error in User or Role creation", errors);
                 return BadRequest(response);
             }
+           
             var responseSuccess = ApiResponse.SuccessResponse("Registration Successful", new
             {
                 newUser.Id,
+                newUser.FullName,
                 newUser.UserName,
-                newUser.Email
+                newUser.Email,
+                newUser.Role,
             });
             return Ok(responseSuccess);
         }

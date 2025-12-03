@@ -7,7 +7,7 @@ namespace Project_X.Data.UnitOfWork
     public interface IUnitOfWork:IDisposable
     {
         public IRepository<AppUser> Users { get; }
-        public IRepository<Organization> Organizations { get; }
+        public IOrganizationRepository Organizations { get; }
         public IRepository<AttendanceLog> AttendanceLogs { get; }
         public IRepository<AttendanceSession> AttendanceSessions { get; }
         public IRepository<LocationBeacon> Beacons { get; }

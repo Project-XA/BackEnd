@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Models.Enums;
 using Project_X.Models;
+using Project_X.Models.Enums;
 using System;
 using System.Collections.Generic;
 namespace Models
@@ -15,5 +16,6 @@ namespace Models
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public List<OrganizationUser> OrganizationUsers { get; set; }
+        public UserRole Role { get; set; }
     }
 }

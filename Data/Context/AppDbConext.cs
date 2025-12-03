@@ -23,6 +23,8 @@ namespace Project_X.Data.Context
         {
             base.OnModelCreating(builder);
             builder.ApplyConfigurationsFromAssembly(typeof(OrganizationConfiguration).Assembly);
+            builder.Entity<AppUser>().Property(u=>u.Role)
+                .HasConversion<string>();
         }
     }
 }

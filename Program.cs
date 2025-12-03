@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Models;
+using Project_X.Data;
 using Project_X.Data.Context;
 using Project_X.Data.Repositories;
 using Project_X.Data.Repository;
@@ -20,14 +21,18 @@ namespace Project_X
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public async static Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
             Env.Load();
             // Add services to the container.
             var connectionString = Env.GetString("CONNECTION_STRING");
             builder.Services.AddControllers().
-                ConfigureApiBehaviorOptions(options =>
+                AddJsonOptions(option=>
+                {
+                    option.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+                })
+                .ConfigureApiBehaviorOptions(options =>
                 {
                     options.SuppressModelStateInvalidFilter = true;
                 });
@@ -91,6 +96,11 @@ namespace Project_X
 
             builder.Services.AddScoped<IEmailService, EmailService>();
             var app = builder.Build();
+            using(var scope = app.Services.CreateScope())
+            {
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                await IdentityRoleIntializer.SeedRoleAsync(roleManager);
+            }
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

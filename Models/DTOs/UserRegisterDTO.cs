@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Project_X.Models.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Project_X.Models.DTOs
 {
@@ -27,5 +28,7 @@ namespace Project_X.Models.DTOs
         [DataType(DataType.Password)]
         [Compare("Password", ErrorMessage = "Password and Confirm Password do not match")]
         public string ConfirmPassword { get; set; }
+        [Required(ErrorMessage = "Your Role is required")]
+        public UserRole Role { get; set; }
     }
 }

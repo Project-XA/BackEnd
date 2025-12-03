@@ -7,6 +7,6 @@ namespace Project_X.Controllers
     [ApiController]
     public class OrganizationController : ControllerBase
     {
-
+        
     }
 }
