@@ -25,7 +25,7 @@ namespace Project_X.Models.Mapping
             CreateMap<AppUser, AddMemberDTO>();
 
             CreateMap<Organization, OrganizationResponseDTO>();
-            CreateMap<OrganizationUser, OrganizationUserResponseDTO>();
+
         }
     }
 }
