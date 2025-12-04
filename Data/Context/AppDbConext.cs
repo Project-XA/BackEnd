@@ -16,6 +16,7 @@ namespace Project_X.Data.Context
         public DbSet<VerificationSession> VerificationSessions { get; set; }
         public DbSet<OTP> OTPs { get; set; }
         public DbSet<Hall> Halls { get; set; }
+        public DbSet<OrganizationUser> OrganizationUser { get; set; }
         public AppDbConext(DbContextOptions dbContextOptions)
             : base(dbContextOptions) { }
 

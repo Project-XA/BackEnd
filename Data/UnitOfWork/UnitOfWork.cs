@@ -13,6 +13,7 @@ namespace Project_X.Data.UnitOfWork
         private readonly AppDbConext _context;
         public IRepository<AppUser> Users { get; }
         public IOrganizationRepository Organizations  {get;}
+        public IRepository<OrganizationUser> OrganizationUsers { get; }
         public IRepository<AttendanceLog> AttendanceLogs { get; }
         public IRepository<AttendanceSession> AttendanceSessions { get; }
         public IRepository<LocationBeacon> Beacons { get; }
@@ -25,6 +26,7 @@ namespace Project_X.Data.UnitOfWork
             _context = context;
             Users = new Repository<AppUser>(_context);
             Organizations = new OrganizationRepository(_context);
+            OrganizationUsers = new Repository<OrganizationUser>(_context);
             AttendanceLogs = new Repository<AttendanceLog>(_context);
             AttendanceSessions = new Repository<AttendanceSession>(_context);
             Beacons = new Repository<LocationBeacon>(_context);

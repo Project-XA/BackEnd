@@ -62,7 +62,8 @@ namespace Project_X.Controllers
                 var response = ApiResponse.FailureResponse("Registration Failed Due to Error in User or Role creation", errors);
                 return BadRequest(response);
             }
-           
+            
+
             var responseSuccess = ApiResponse.SuccessResponse("Registration Successful", new
             {
                 newUser.Id,
@@ -96,6 +97,11 @@ namespace Project_X.Controllers
                         new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
                         new Claim(ClaimTypes.NameIdentifier,user.Id)
                     };
+                    var roles = await _userManager.GetRolesAsync(user);
+                    foreach (var role in roles)
+                    {
+                        Claims.Add(new Claim(ClaimTypes.Role, role));
+                    }
                     var securitkey = Environment.GetEnvironmentVariable("SecurityKey");
                     var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securitkey));
                     var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

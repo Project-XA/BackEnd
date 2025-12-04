@@ -19,5 +19,12 @@ namespace Project_X.Data.Repositories
             return await _context.Organizations
                 .FirstOrDefaultAsync(o => o.OrganizationCode == orgCode);
         }
+
+        public async Task<bool> ValidateUser(int organizationId, string userId)
+        {
+            var result = await _context.OrganizationUser.
+                AnyAsync(ou=>ou.OrganizationId==organizationId&& ou.UserId==userId);
+            return result;
+        }
     }
 }

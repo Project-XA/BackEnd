@@ -19,6 +19,8 @@ namespace Project_X.Data.Configuration
             builder.HasOne(ou => ou.User)
                 .WithMany(user => user.OrganizationUsers)
                 .HasForeignKey(ou => ou.UserId);
+            builder.Property(ou => ou.Role)
+                .HasConversion<string>();
         }
     }
 }

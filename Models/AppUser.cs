@@ -9,7 +9,7 @@ namespace Models
     public class AppUser : IdentityUser
     {
         public string FullName { get; set; }
-        public Status Status { get; set; }
+        public Status Status { get; set; } = Status.Active;
         public List<AttendanceSession> Sessions { get; set; }
         public List<VerificationSession> VerificationSessions { get; set; }
         public List<AttendanceLog> Logs { get; set; }

@@ -10,6 +10,5 @@ namespace Project_X.Models.DTOs
         public string OrganizationType { get; set; }
         [Required(ErrorMessage = "Conatct Email is required")]
         public string ConatactEmail { get; set; }
-        public DateTime CreatedAt { get; set; }
     }
 }

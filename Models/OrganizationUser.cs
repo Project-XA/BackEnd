@@ -1,4 +1,5 @@
 ﻿using Models;
+using Project_X.Models.Enums;
 
 namespace Project_X.Models
 {
@@ -8,6 +9,6 @@ namespace Project_X.Models
         public Organization Organization { get; set; }
         public string UserId { get; set; }
         public AppUser User { get; set; }
-        public string Role { get; set; }
+        public UserRole Role { get; set; }
     }
 }
