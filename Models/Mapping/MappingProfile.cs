@@ -25,7 +25,10 @@ namespace Project_X.Models.Mapping
             CreateMap<AppUser, AddMemberDTO>();
 
             CreateMap<Organization, OrganizationResponseDTO>();
-
+            CreateMap<HallDTO, Hall>()
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src =>DateTime.UtcNow));
+            CreateMap<Hall, HallDTO>();
         }
     }
 }

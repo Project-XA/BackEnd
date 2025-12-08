@@ -18,7 +18,7 @@ namespace Project_X.Data.UnitOfWork
         public IRepository<AttendanceSession> AttendanceSessions { get; }
         public IRepository<LocationBeacon> Beacons { get; }
         public IRepository<VerificationSession> VerificationSessions { get; }
-        public IRepository<Hall> Halls { get; }
+        public HallRepository Halls { get; }
         public IOtpRepository OTPs { get; }
 
         public UnitOfWork(AppDbConext context)
@@ -31,7 +31,7 @@ namespace Project_X.Data.UnitOfWork
             AttendanceSessions = new Repository<AttendanceSession>(_context);
             Beacons = new Repository<LocationBeacon>(_context);
             VerificationSessions = new Repository<VerificationSession>(_context);
-            Halls = new Repository<Hall>(_context);
+            Halls = new HallRepository(_context);
             OTPs = new OtpRepository(_context);
         }
     

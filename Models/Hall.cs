@@ -11,5 +11,7 @@ namespace Project_X.Models
         public int OrganizationId { get; set; }
         public Organization Organization { get; set; }
         public List<AttendanceSession> Sessions { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
     }
 }
