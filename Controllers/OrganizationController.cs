@@ -60,6 +60,7 @@ namespace Project_X.Controllers
                         while(org != null)
                         {
                             code = _random.Next(1000, 9999);
+                            org = await _unitOfWork.Organizations.GetByCodeAsync(code);
                         }
                         organization.OrganizationCode = code;
                         await _unitOfWork.Organizations.AddAsync(organization);
