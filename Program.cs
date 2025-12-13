@@ -95,6 +95,11 @@ namespace Project_X
             });
 
             builder.Services.AddScoped<IEmailService, EmailService>();
+            builder.Services.AddScoped<IOrganizationService, OrganizationService>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<ISessionService, SessionService>();
+            builder.Services.AddScoped<IHallService, HallService>();
+            builder.Services.AddScoped<IUserService, UserService>();
             var app = builder.Build();
             using(var scope = app.Services.CreateScope())
             {
