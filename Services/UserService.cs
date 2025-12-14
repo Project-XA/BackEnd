@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Models;
 using Project_X.Data.UnitOfWork;
@@ -10,31 +11,34 @@ namespace Project_X.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<AppUser> _userManager;
+        private readonly IMapper _mapper;
 
-        public UserService(IUnitOfWork unitOfWork, UserManager<AppUser> userManager)
+        public UserService(IUnitOfWork unitOfWork, UserManager<AppUser> userManager, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
+            _mapper = mapper;
         }
 
-        public async Task<ApiResponse> GetUserRoleAsync(GetRoleDTO roleDTO)
+        public async Task<ApiResponse> GetUserAsync(GetUserDTO userDTO)
         {
-            var organization = await _unitOfWork.Organizations.GetByCodeAsync(roleDTO.OrgainzatinCode);
+            var organization = await _unitOfWork.Organizations.GetByCodeAsync(userDTO.OrgainzatinCode);
             if (organization == null)
             {
                 return ApiResponse.FailureResponse("Organization not found", new List<string> { "Invalid Organization Code" });
             }
 
-            var user = await _userManager.FindByEmailAsync(roleDTO.Email);
+            var user = await _userManager.FindByEmailAsync(userDTO.Email);
             if (user != null)
             {
                 var isMember = await _unitOfWork.Organizations.ValidateUser(organization.OrganizationId, user.Id);
                 if (isMember)
                 {
-                    var isPass = await _userManager.CheckPasswordAsync(user, roleDTO.Password);
+                    var isPass = await _userManager.CheckPasswordAsync(user, userDTO.Password);
                     if (isPass)
                     {
-                        return ApiResponse.SuccessResponse("User is retrieved successfully", user.Role);
+                        var userResponse = _mapper.Map<UserResponseDTO>(user);
+                        return ApiResponse.SuccessResponse("User is retrieved successfully", userResponse);
                     }
                     else
                     {

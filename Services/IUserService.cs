@@ -5,6 +5,7 @@ namespace Project_X.Services
 {
     public interface IUserService
     {
-        Task<ApiResponse> GetUserRoleAsync(GetRoleDTO roleDTO);
+        Task<ApiResponse> GetUserAsync(GetUserDTO UserDTO);
+        //Task<ApiResponse> GetUserRoleAsync();
     }
 }

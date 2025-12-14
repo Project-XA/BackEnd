@@ -16,8 +16,8 @@ namespace Project_X.Controllers
             _userService = userService;
         }
 
-        [HttpGet("get-user-role")]
-        public async Task<IActionResult> GetUserRole([FromQuery] GetRoleDTO roleDTO)
+        [HttpGet("get-user")]
+        public async Task<IActionResult> GetUser([FromQuery] GetUserDTO roleDTO)
         {
             if (!ModelState.IsValid)
             {
@@ -27,7 +27,7 @@ namespace Project_X.Controllers
                 return BadRequest(ApiResponse.FailureResponse("Invalid data", errors));
             }
 
-            var result = await _userService.GetUserRoleAsync(roleDTO);
+            var result = await _userService.GetUserAsync(roleDTO);
             
             if (result.Success)
             {

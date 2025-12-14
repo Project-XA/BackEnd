@@ -2,7 +2,7 @@
 
 namespace Project_X.Models.DTOs
 {
-    public class GetRoleDTO
+    public class GetUserDTO
     {
         [Required(ErrorMessage = "Organization code is required")]
         public int OrgainzatinCode { get; set; }

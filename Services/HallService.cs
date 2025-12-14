@@ -33,11 +33,11 @@ namespace Project_X.Services
             }
 
             var hallEntity = _mapper.Map<Hall>(hallDTO);
-            hallEntity.Organization = organization;
             await _unitOfWork.Halls.AddAsync(hallEntity);
             await _unitOfWork.SaveAsync();
     
-            return ApiResponse.SuccessResponse("Hall created successfully.");
+            var hallResponse = _mapper.Map<HallResponseDTO>(hallEntity);
+            return ApiResponse.SuccessResponse("Hall created successfully.", hallResponse);
         }
 
         public async Task<ApiResponse> GetAllHallsAsync(int organizationId)

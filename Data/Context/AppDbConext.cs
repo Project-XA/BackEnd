@@ -26,7 +26,7 @@ namespace Project_X.Data.Context
             builder.ApplyConfigurationsFromAssembly(typeof(OrganizationConfiguration).Assembly);
             builder.Entity<AppUser>().Property(u=>u.Role)
                 .HasConversion<string>();
-            builder.Entity<Hall>().HasKey(hall => new { hall.Id, hall.HallName });
+            builder.Entity<Hall>().HasKey(hall => new { hall.Id});
         }
     }
 }

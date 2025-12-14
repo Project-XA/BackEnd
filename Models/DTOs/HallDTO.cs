@@ -14,6 +14,6 @@ namespace Project_X.Models.DTOs
         [Required]
         public double HallArea { get; set; } // Area of the hall in square meters
         [Required]
-        public int OrganizationId { get; set; }
+           public int OrganizationId { get; set; }
     }
 }
