@@ -10,7 +10,7 @@ namespace Project_X.Data.UnitOfWork
         public IOrganizationRepository Organizations { get; }
         public IRepository<OrganizationUser> OrganizationUsers { get; }
         public IRepository<AttendanceLog> AttendanceLogs { get; }
-        public IRepository<AttendanceSession> AttendanceSessions { get; }
+        public IAttendanceSessionRepository AttendanceSessions { get; }
         public IRepository<LocationBeacon> Beacons { get; }
         public IRepository<VerificationSession> VerificationSessions { get; }
         public HallRepository Halls { get; }

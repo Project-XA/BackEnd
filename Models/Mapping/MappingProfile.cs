@@ -33,6 +33,9 @@ namespace Project_X.Models.Mapping
             CreateMap<Hall, UpdateHallDTO>().ReverseMap();
             CreateMap<AttendanceSession, CreateSessionDTO>().ReverseMap();
             CreateMap<AppUser, UserResponseDTO>().ReverseMap();
+            CreateMap<UpdateOrganizationDTO, Organization>();
+            CreateMap<UpdateSessionDTO, AttendanceSession>();
+            CreateMap<AttendanceSession, SessionResponseDTO>();
         }
     }
 }

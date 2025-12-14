@@ -46,5 +46,61 @@ namespace Project_X.Services
             
             return ApiResponse.SuccessResponse("Session Created Successfully");
         }
+        public async Task<ApiResponse> GetSessionByIdAsync(int sessionId)
+        {
+            var session = await _unitOfWork.AttendanceSessions.GetByIdAsync(sessionId);
+            if (session == null)
+            {
+                return ApiResponse.FailureResponse("Session not found", new List<string> { "Invalid Session ID" });
+            }
+            var sessionResponse = _mapper.Map<SessionResponseDTO>(session);
+            return ApiResponse.SuccessResponse("Session retrieved successfully", sessionResponse);
+        }
+
+        public async Task<ApiResponse> GetSessionsByHallIdAsync(int hallId)
+        {
+             var hall = await _unitOfWork.Halls.GetByIdAsync(hallId);
+             if (hall == null)
+             {
+                 return ApiResponse.FailureResponse("Hall not found", new List<string> { "Invalid Hall ID" });
+             }
+
+             var sessions = await _unitOfWork.AttendanceSessions.GetSessionsByHallIdAsync(hallId);
+             var sessionResponses = _mapper.Map<List<SessionResponseDTO>>(sessions);
+             return ApiResponse.SuccessResponse("Sessions retrieved successfully", sessionResponses);
+        }
+
+        public async Task<ApiResponse> UpdateSessionAsync(int sessionId, UpdateSessionDTO updateSessionDTO)
+        {
+            var session = await _unitOfWork.AttendanceSessions.GetByIdAsync(sessionId);
+            if (session == null)
+            {
+                return ApiResponse.FailureResponse("Session not found", new List<string> { "Invalid Session ID" });
+            }
+
+            _mapper.Map(updateSessionDTO, session);
+            // Updating StartAt and EndAt might require validation logic similar to creation if needed, 
+            // but relying on DTO validation attributes for now.
+            
+            _unitOfWork.AttendanceSessions.Update(session);
+            await _unitOfWork.SaveAsync();
+
+            var sessionResponse = _mapper.Map<SessionResponseDTO>(session);
+            return ApiResponse.SuccessResponse("Session updated successfully", sessionResponse);
+        }
+
+        public async Task<ApiResponse> DeleteSessionAsync(int sessionId)
+        {
+            var session = await _unitOfWork.AttendanceSessions.GetByIdAsync(sessionId);
+            if (session == null)
+            {
+                return ApiResponse.FailureResponse("Session not found", new List<string> { "Invalid Session ID" });
+            }
+
+            _unitOfWork.AttendanceSessions.Delete(session);
+            await _unitOfWork.SaveAsync();
+
+            return ApiResponse.SuccessResponse("Session deleted successfully");
+        }
     }
 }

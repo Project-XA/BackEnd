@@ -137,5 +137,46 @@ namespace Project_X.Services
             return ApiResponse.SuccessResponse("Member added successfully",
                 new { newUser.Id, newUser.Email, organization.OrganizationId });
         }
+        public async Task<ApiResponse> GetOrganizationByIdAsync(int organizationId)
+        {
+            var organization = await _unitOfWork.Organizations.GetByIdAsync(organizationId);
+            if (organization == null)
+            {
+                return ApiResponse.FailureResponse("Organization not found.", new List<string> { "Invalid Organization ID" });
+            }
+            var organizationResponse = _mapper.Map<OrganizationResponseDTO>(organization);
+            return ApiResponse.SuccessResponse("Organization retrieved successfully", organizationResponse);
+        }
+
+        public async Task<ApiResponse> UpdateOrganizationAsync(int organizationId, UpdateOrganizationDTO updateOrganizationDTO)
+        {
+            var organization = await _unitOfWork.Organizations.GetByIdAsync(organizationId);
+            if (organization == null)
+            {
+                return ApiResponse.FailureResponse("Organization not found.", new List<string> { "Invalid Organization ID" });
+            }
+
+            _mapper.Map(updateOrganizationDTO, organization);
+            
+            _unitOfWork.Organizations.Update(organization);
+            await _unitOfWork.SaveAsync();
+
+            var organizationResponse = _mapper.Map<OrganizationResponseDTO>(organization);
+            return ApiResponse.SuccessResponse("Organization updated successfully", organizationResponse);
+        }
+
+        public async Task<ApiResponse> DeleteOrganizationAsync(int organizationId)
+        {
+            var organization = await _unitOfWork.Organizations.GetByIdAsync(organizationId);
+            if (organization == null)
+            {
+                 return ApiResponse.FailureResponse("Organization not found.", new List<string> { "Invalid Organization ID" });
+            }
+
+            _unitOfWork.Organizations.Delete(organization);
+            await _unitOfWork.SaveAsync();
+
+            return ApiResponse.SuccessResponse("Organization deleted successfully");
+        }
     }
 }

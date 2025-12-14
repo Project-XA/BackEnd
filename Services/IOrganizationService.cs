@@ -7,5 +7,8 @@ namespace Project_X.Services
     {
         Task<ApiResponse> CreateOrganizationAsync(CreateOrganizationDTO createOrganizationDTO, string userId);
         Task<ApiResponse> AddMemberAsync(AddMemberDTO addMemberDTO);
+        Task<ApiResponse> GetOrganizationByIdAsync(int organizationId);
+        Task<ApiResponse> UpdateOrganizationAsync(int organizationId, UpdateOrganizationDTO updateOrganizationDTO);
+        Task<ApiResponse> DeleteOrganizationAsync(int organizationId);
     }
 }

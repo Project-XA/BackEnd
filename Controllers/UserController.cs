@@ -16,8 +16,8 @@ namespace Project_X.Controllers
             _userService = userService;
         }
 
-        [HttpGet("get-user")]
-        public async Task<IActionResult> GetUser([FromQuery] GetUserDTO roleDTO)
+        [HttpPost("get-user")]
+        public async Task<IActionResult> GetUser(GetUserDTO roleDTO)
         {
             if (!ModelState.IsValid)
             {

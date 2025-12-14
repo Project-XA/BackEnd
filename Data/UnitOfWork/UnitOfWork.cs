@@ -15,7 +15,7 @@ namespace Project_X.Data.UnitOfWork
         public IOrganizationRepository Organizations  {get;}
         public IRepository<OrganizationUser> OrganizationUsers { get; }
         public IRepository<AttendanceLog> AttendanceLogs { get; }
-        public IRepository<AttendanceSession> AttendanceSessions { get; }
+        public IAttendanceSessionRepository AttendanceSessions { get; }
         public IRepository<LocationBeacon> Beacons { get; }
         public IRepository<VerificationSession> VerificationSessions { get; }
         public HallRepository Halls { get; }
@@ -28,7 +28,7 @@ namespace Project_X.Data.UnitOfWork
             Organizations = new OrganizationRepository(_context);
             OrganizationUsers = new Repository<OrganizationUser>(_context);
             AttendanceLogs = new Repository<AttendanceLog>(_context);
-            AttendanceSessions = new Repository<AttendanceSession>(_context);
+            AttendanceSessions = new AttendanceSessionRepository(_context);
             Beacons = new Repository<LocationBeacon>(_context);
             VerificationSessions = new Repository<VerificationSession>(_context);
             Halls = new HallRepository(_context);

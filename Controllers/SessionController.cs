@@ -43,5 +43,60 @@ namespace Project_X.Controllers
             }
             return BadRequest(result);
         }
+        [HttpGet("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetSessionById(int id)
+        {
+            var result = await _sessionService.GetSessionByIdAsync(id);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return NotFound(result);
+        }
+
+        [HttpGet("hall/{hallId}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetSessionsByHallId(int hallId)
+        {
+            var result = await _sessionService.GetSessionsByHallIdAsync(hallId);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateSession(int id, UpdateSessionDTO updateSessionDTO)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors).Select(e => e.ErrorMessage)
+                    .ToList();
+                return BadRequest(ApiResponse.FailureResponse("Invalid Data", errors));
+            }
+
+            var result = await _sessionService.UpdateSessionAsync(id, updateSessionDTO);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteSession(int id)
+        {
+            var result = await _sessionService.DeleteSessionAsync(id);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
     }
 }
