@@ -1,6 +1,7 @@
 using AutoMapper;
 using Models;
 using Project_X.Data.UnitOfWork;
+using Project_X.Models;
 using Project_X.Models.DTOs;
 using Project_X.Models.Response;
 
@@ -35,8 +36,75 @@ namespace Project_X.Services
             hallEntity.Organization = organization;
             await _unitOfWork.Halls.AddAsync(hallEntity);
             await _unitOfWork.SaveAsync();
-
+    
             return ApiResponse.SuccessResponse("Hall created successfully.");
+        }
+
+        public async Task<ApiResponse> GetAllHallsAsync(int organizationId)
+        {
+             var organization = await _unitOfWork.Organizations.GetByIdAsync(organizationId);
+             if (organization == null)
+             {
+                 return ApiResponse.FailureResponse("Organization not found.", new List<string> { "Invalid Organization ID" });
+             }
+
+             var halls = await _unitOfWork.Halls.GetHallsByOrganizationIdAsync(organizationId);
+             var hallResponses = _mapper.Map<List<HallResponseDTO>>(halls);
+             
+             return ApiResponse.SuccessResponse("Halls retrieved successfully", hallResponses);
+        }
+
+        public async Task<ApiResponse> GetHallByIdAsync(int hallId)
+        {
+            var hall = await _unitOfWork.Halls.GetByIdAsync(hallId);
+            if (hall == null)
+            {
+                return ApiResponse.FailureResponse("Hall not found", new List<string> { "Invalid Hall ID" });
+            }
+            var hallResponse = _mapper.Map<HallResponseDTO>(hall);
+            return ApiResponse.SuccessResponse("Hall retrieved successfully", hallResponse);
+        }
+
+        public async Task<ApiResponse> UpdateHallAsync(int hallId, UpdateHallDTO updateHallDTO)
+        {
+            var hall = await _unitOfWork.Halls.GetByIdAsync(hallId);
+            if (hall == null)
+            {
+                return ApiResponse.FailureResponse("Hall not found", new List<string> { "Invalid Hall ID" });
+            }
+            
+            // Check for unique name collision if name is changed
+            if (hall.HallName != updateHallDTO.HallName)
+            {
+                var existingHall = await _unitOfWork.Halls.GetHallByNameAsync(updateHallDTO.HallName);
+                if (existingHall != null)
+                {
+                    return ApiResponse.FailureResponse("Hall with this name already exists.", new List<string> { "Duplicate Hall Name" });
+                }
+            }
+
+            _mapper.Map(updateHallDTO, hall);
+            hall.UpdatedAt = DateTime.UtcNow;
+            
+            _unitOfWork.Halls.Update(hall);
+            await _unitOfWork.SaveAsync();
+
+            var hallResponse = _mapper.Map<HallResponseDTO>(hall);
+            return ApiResponse.SuccessResponse("Hall updated successfully", hallResponse);
+        }
+
+        public async Task<ApiResponse> DeleteHallAsync(int hallId)
+        {
+            var hall = await _unitOfWork.Halls.GetByIdAsync(hallId);
+            if (hall == null)
+            {
+                return ApiResponse.FailureResponse("Hall not found", new List<string> { "Invalid Hall ID" });
+            }
+
+            _unitOfWork.Halls.Delete(hall);
+            await _unitOfWork.SaveAsync();
+
+            return ApiResponse.SuccessResponse("Hall deleted successfully");
         }
     }
 }

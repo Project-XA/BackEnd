@@ -12,7 +12,7 @@ using Project_X.Data.Context;
 namespace Project_X.Migrations
 {
     [DbContext(typeof(AppDbConext))]
-    [Migration("20251110141843_Init")]
+    [Migration("20251213144118_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -197,9 +197,6 @@ namespace Project_X.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<int>("OrganizationId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("PasswordHash")
                         .HasColumnType("text");
 
@@ -238,8 +235,6 @@ namespace Project_X.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.HasIndex("OrganizationId");
-
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
@@ -257,6 +252,9 @@ namespace Project_X.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("OrganizationCode")
+                        .HasColumnType("integer");
 
                     b.Property<string>("OrganizationName")
                         .IsRequired()
@@ -334,6 +332,16 @@ namespace Project_X.Migrations
                     b.Property<DateTime>("EndAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("HallId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("HallId1")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("HallName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<decimal>("Longitude")
                         .HasColumnType("numeric");
 
@@ -367,7 +375,39 @@ namespace Project_X.Migrations
 
                     b.HasIndex("OrganizationId");
 
+                    b.HasIndex("HallId1", "HallName");
+
                     b.ToTable("AttendanceSessions");
+                });
+
+            modelBuilder.Entity("Project_X.Models.Hall", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("HallName")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Capacity")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<double>("HallArea")
+                        .HasColumnType("double precision");
+
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id", "HallName");
+
+                    b.HasIndex("OrganizationId");
+
+                    b.ToTable("Halls");
                 });
 
             modelBuilder.Entity("Project_X.Models.LocationBeacon", b =>
@@ -397,6 +437,52 @@ namespace Project_X.Migrations
                     b.HasKey("BeaconId");
 
                     b.ToTable("Beacons");
+                });
+
+            modelBuilder.Entity("Project_X.Models.OTP", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ExpirationTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Otp")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OTPs");
+                });
+
+            modelBuilder.Entity("Project_X.Models.OrganizationUser", b =>
+                {
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("OrganizationId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("OrganizationUser");
                 });
 
             modelBuilder.Entity("Project_X.Models.VerificationSession", b =>
@@ -501,17 +587,6 @@ namespace Project_X.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Models.AppUser", b =>
-                {
-                    b.HasOne("Models.Organization", "Organization")
-                        .WithMany("Users")
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Organization");
-                });
-
             modelBuilder.Entity("Project_X.Models.AttendanceLog", b =>
                 {
                     b.HasOne("Project_X.Models.AttendanceSession", "Session")
@@ -553,9 +628,28 @@ namespace Project_X.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Project_X.Models.Hall", "Hall")
+                        .WithMany("Sessions")
+                        .HasForeignKey("HallId1", "HallName")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Hall");
+
                     b.Navigation("Organization");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Project_X.Models.Hall", b =>
+                {
+                    b.HasOne("Models.Organization", "Organization")
+                        .WithMany("Halls")
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Organization");
                 });
 
             modelBuilder.Entity("Project_X.Models.LocationBeacon", b =>
@@ -567,6 +661,25 @@ namespace Project_X.Migrations
                         .IsRequired();
 
                     b.Navigation("Session");
+                });
+
+            modelBuilder.Entity("Project_X.Models.OrganizationUser", b =>
+                {
+                    b.HasOne("Models.Organization", "Organization")
+                        .WithMany("OrganizationUsers")
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Models.AppUser", "User")
+                        .WithMany("OrganizationUsers")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Organization");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Project_X.Models.VerificationSession", b =>
@@ -592,6 +705,8 @@ namespace Project_X.Migrations
                 {
                     b.Navigation("Logs");
 
+                    b.Navigation("OrganizationUsers");
+
                     b.Navigation("Sessions");
 
                     b.Navigation("VerificationSessions");
@@ -599,9 +714,11 @@ namespace Project_X.Migrations
 
             modelBuilder.Entity("Models.Organization", b =>
                 {
-                    b.Navigation("Sessions");
+                    b.Navigation("Halls");
 
-                    b.Navigation("Users");
+                    b.Navigation("OrganizationUsers");
+
+                    b.Navigation("Sessions");
                 });
 
             modelBuilder.Entity("Project_X.Models.AttendanceSession", b =>
@@ -611,6 +728,11 @@ namespace Project_X.Migrations
                     b.Navigation("Logs");
 
                     b.Navigation("Verifications");
+                });
+
+            modelBuilder.Entity("Project_X.Models.Hall", b =>
+                {
+                    b.Navigation("Sessions");
                 });
 
             modelBuilder.Entity("Project_X.Models.VerificationSession", b =>

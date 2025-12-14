@@ -28,7 +28,10 @@ namespace Project_X.Models.Mapping
             CreateMap<HallDTO, Hall>()
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src =>DateTime.UtcNow));
-            CreateMap<Hall, HallDTO>();
+            CreateMap<Hall, HallDTO>().ReverseMap();
+            CreateMap<Hall, HallResponseDTO>().ReverseMap();
+            CreateMap<Hall, UpdateHallDTO>().ReverseMap();
+            CreateMap<AttendanceSession, CreateSessionDTO>().ReverseMap();
         }
     }
 }

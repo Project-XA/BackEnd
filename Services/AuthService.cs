@@ -56,7 +56,6 @@ namespace Project_X.Services
             
             if (!roleResult.Succeeded)
             {
-                // Cleanup user if role assignment fails
                 await _userManager.DeleteAsync(newUser);
                 var errors = roleResult.Errors.Select(e => e.Description).ToList();
                 return ApiResponse.FailureResponse("Registration Failed Due to Error in Role creation", errors);
@@ -151,7 +150,7 @@ namespace Project_X.Services
                 </div>";
                 await _emailService.SendEmailAsync(forgotPasswordDTO.Email, subject, body);
             }
-            // Always return success to prevent email enumeration
+           
             return ApiResponse.SuccessResponse("If your email exists, an OTP will be sent.");
         }
 

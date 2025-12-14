@@ -16,5 +16,12 @@ namespace Project_X.Data.Repositories
             return await _context.Halls
                 .FirstOrDefaultAsync(h => h.HallName == hallName);
         }
+
+        public async Task<List<Hall>> GetHallsByOrganizationIdAsync(int organizationId)
+        {
+            return await _context.Halls
+                .Where(h => h.OrganizationId == organizationId)
+                .ToListAsync();
+        }
     }
 }

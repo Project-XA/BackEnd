@@ -37,7 +37,70 @@ namespace Project_X.Controllers
             }
             if (result.Message == "Organization not found.")
             {
-                // Preserve original behavior
+                return NotFound(result);
+            }
+            return BadRequest(result);
+        }
+
+        [HttpGet("get-all-halls/{organizationId}")]
+        public async Task<IActionResult> GetAllHalls(int organizationId)
+        {
+            var result = await _hallService.GetAllHallsAsync(organizationId);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            if (result.Message == "Organization not found.")
+            {
+                 return NotFound(result);
+            }
+            return BadRequest(result);
+        }
+
+        [HttpGet("get-hall/{hallId}")]
+        public async Task<IActionResult> GetHallById(int hallId)
+        {
+            var result = await _hallService.GetHallByIdAsync(hallId);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return NotFound(result);
+        }
+
+        [HttpPut("update-hall/{hallId}")]
+        public async Task<IActionResult> UpdateHall(int hallId, UpdateHallDTO updateHallDTO)
+        {
+             if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage).ToList();
+                return BadRequest(ApiResponse.FailureResponse("Invalid Data", errors));
+            }
+
+            var result = await _hallService.UpdateHallAsync(hallId, updateHallDTO);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            if (result.Message == "Hall not found")
+            {
+                return NotFound(result);
+            }
+            return BadRequest(result);
+        }
+
+        [HttpDelete("delete-hall/{hallId}")]
+        public async Task<IActionResult> DeleteHall(int hallId)
+        {
+            var result = await _hallService.DeleteHallAsync(hallId);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+             if (result.Message == "Hall not found")
+            {
                 return NotFound(result);
             }
             return BadRequest(result);
