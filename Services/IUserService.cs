@@ -6,6 +6,6 @@ namespace Project_X.Services
     public interface IUserService
     {
         Task<ApiResponse> GetUserAsync(GetUserDTO UserDTO);
-        //Task<ApiResponse> GetUserRoleAsync();
+        Task<ApiResponse> GetUserRoleAsync(GetUserDTO UserDTO);
     }
 }

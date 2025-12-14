@@ -605,7 +605,7 @@ Deletes a session by ID.
 ## 5. User APIs
 Base Path: `/api/User`
 
-### Get User Role
+### Get User Details
 Retrieves the role of a user within a specific organization.
 
 - **URL**: `/get-user`
@@ -635,6 +635,31 @@ Retrieves the role of a user within a specific organization.
         "createdAt": "2023-01-01T00:00:00Z",
         "updatedAt": "2023-01-01T00:00:00Z"
       },
+      "errors": []
+    }
+    ```
+
+### Get User Role
+Retrieves just the role of a user within a specific organization.
+
+- **URL**: `/get-user-role`
+- **Method**: `POST`
+- **Auth**: None
+- **Request Parameters**:
+```json
+{
+  "OrgainzatinCode": "1234",
+  "Email": "Abdulrahman@example.com",
+  "Password": "Password123!"
+}
+```
+- **Response**:
+  - `200 OK`:
+    ```json
+    {
+      "success": true,
+      "message": "User is retrieved successfully",
+      "data": "User",
       "errors": []
     }
     ```

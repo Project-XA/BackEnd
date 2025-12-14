@@ -41,5 +41,31 @@ namespace Project_X.Controllers
 
             return BadRequest(result);
         }
+
+         [HttpPost("get-user-role")]
+        public async Task<IActionResult> GetUserRole(GetUserDTO roleDTO)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage).ToList();
+                return BadRequest(ApiResponse.FailureResponse("Invalid data", errors));
+            }
+
+            var result = await _userService.GetUserRoleAsync(roleDTO);
+            
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+
+            if (result.Message == "Organization not found")
+            {
+                return NotFound(result);
+            }
+
+            return BadRequest(result);
+        }
     }
 }
