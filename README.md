@@ -447,7 +447,7 @@ Creates a new attendance session.
     "organizationId": 1,
     "createdBy": "userid-guid",
     "sessionName": "Morning Session",
-    "connectionType": 0, // Enum Value
+    "connectionType": "WIFI",
     "longitude": 0,
     "latitude": 0,
     "allowedRadius": 50,
@@ -487,7 +487,7 @@ Retrieves a session by its ID.
         "createdBy": "userid-guid",
         "sessionName": "Morning Session",
         "createdAt": "2023-10-27T09:00:00Z",
-        "connectionType": 0,
+        "connectionType": "WIFI",
         "longitude": 0,
         "latitude": 0,
         "allowedRadius": 50,
@@ -521,7 +521,7 @@ Retrieves all sessions associated with a specific hall.
           "createdBy": "userid-guid",
           "sessionName": "Morning Session",
           "createdAt": "2023-10-27T09:00:00Z",
-          "connectionType": 0,
+          "connectionType": "WIFI",
           "longitude": 0,
           "latitude": 0,
           "allowedRadius": 50,
@@ -546,7 +546,7 @@ Updates a session's details.
   ```json
   {
     "sessionName": "Updated Session",
-    "connectionType": 0,
+    "connectionType": "WIFI",
     "longitude": 0,
     "latitude": 0,
     "allowedRadius": 50,
@@ -569,7 +569,7 @@ Updates a session's details.
         "createdBy": "userid-guid",
         "sessionName": "Updated Session",
         "createdAt": "2023-10-27T09:00:00Z",
-        "connectionType": 0,
+        "connectionType": "WIFI",
         "longitude": 0,
         "latitude": 0,
         "allowedRadius": 50,
@@ -663,3 +663,28 @@ Retrieves just the role of a user within a specific organization.
       "errors": []
     }
     ```
+
+## 6. Enums
+
+### UserRole
+- `Admin`
+- `User`
+
+### VerificationType
+- `Face`
+- `FingerPrint`
+
+### ConnectionType
+- `WIFI`
+- `Bluetooth`
+- `localNetwork`
+
+### AttendanceResult
+- `Present`
+- `Absent`
+- `Late`
+- `Excused`
+
+### Status
+- `Active`
+- `Inactive`
