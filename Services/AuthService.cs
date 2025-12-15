@@ -101,7 +101,7 @@ namespace Project_X.Services
                     var token = new JwtSecurityToken(
                         claims: claims,
                         notBefore: DateTime.UtcNow,
-                        expires: DateTime.UtcNow.AddMinutes(90),
+                        expires: DateTime.UtcNow.AddDays(365),
                         signingCredentials: creds
                     );
                     var loginToken = new JwtSecurityTokenHandler().WriteToken(token);
