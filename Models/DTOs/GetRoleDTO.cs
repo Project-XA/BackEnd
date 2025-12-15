@@ -5,7 +5,7 @@ namespace Project_X.Models.DTOs
     public class GetUserDTO
     {
         [Required(ErrorMessage = "Organization code is required")]
-        public int OrgainzatinCode { get; set; }
+        public int OrganizationCode { get; set; }
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage ="Invalid email format")]
         public string Email { get; set; }

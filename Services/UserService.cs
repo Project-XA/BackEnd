@@ -22,7 +22,7 @@ namespace Project_X.Services
 
         public async Task<ApiResponse> GetUserAsync(GetUserDTO userDTO)
         {
-            var organization = await _unitOfWork.Organizations.GetByCodeAsync(userDTO.OrgainzatinCode);
+            var organization = await _unitOfWork.Organizations.GetByCodeAsync(userDTO.OrganizationCode);
             if (organization == null)
             {
                 return ApiResponse.FailureResponse("Organization not found", new List<string> { "Invalid Organization Code" });
@@ -51,7 +51,7 @@ namespace Project_X.Services
         }
         public async Task<ApiResponse> GetUserRoleAsync(GetUserDTO userDTO)
         {
-            var organization = await _unitOfWork.Organizations.GetByCodeAsync(userDTO.OrgainzatinCode);
+            var organization = await _unitOfWork.Organizations.GetByCodeAsync(userDTO.OrganizationCode);
             if (organization == null)
             {
                 return ApiResponse.FailureResponse("Organization not found", new List<string> { "Invalid Organization Code" });
