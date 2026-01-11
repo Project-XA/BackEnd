@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Project_X.Data.Context;
 using Project_X.Data.Repositories;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Project_X.Data.Repository
@@ -37,6 +38,11 @@ namespace Project_X.Data.Repository
         {
            var entity = await _dbSet.FindAsync(keyValues);
            return entity;
+        }
+
+        public async Task<List<T>> FindAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _dbSet.Where(predicate).ToListAsync();
         }
 
         public void Update(T entity)

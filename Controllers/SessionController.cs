@@ -98,5 +98,25 @@ namespace Project_X.Controllers
             }
             return BadRequest(result);
         }
+
+        [HttpPost("save-attend")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> SaveAttend(SaveAttendDTO saveAttendDTO)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors).Select(e => e.ErrorMessage)
+                    .ToList();
+                return BadRequest(ApiResponse.FailureResponse("Invalid Data", errors));
+            }
+
+            var result = await _sessionService.SaveAttendAsync(saveAttendDTO);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
     }
 }

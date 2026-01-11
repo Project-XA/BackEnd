@@ -102,5 +102,96 @@ namespace Project_X.Services
 
             return ApiResponse.SuccessResponse("Session deleted successfully");
         }
+
+        public async Task<ApiResponse> SaveAttendAsync(SaveAttendDTO attendDTO)
+        {
+            var session = await _unitOfWork.AttendanceSessions.GetByIdAsync(attendDTO.SessionId);
+            if (session == null)
+            {
+                return ApiResponse.FailureResponse("Session not found", new List<string> { "Invalid Session ID" });
+            }
+
+            if (session.OrganizationId == 0)
+            {
+                return ApiResponse.FailureResponse("Session is not associated with an organization", new List<string> { "Invalid Session Configuration" });
+            }
+
+            var uniqueUserIds = attendDTO.UsersIds.Distinct().ToList();
+
+            var errors = new List<string>();
+            var attendanceLogs = new List<AttendanceLog>();
+
+            foreach (var userId in uniqueUserIds)
+            {
+                var user = await _userManager.FindByIdAsync(userId);
+                if (user == null)
+                {
+                    errors.Add($"User with ID '{userId}' not found");
+                    continue;
+                }
+
+                var orgUser = await _unitOfWork.OrganizationUsers
+                    .FindAsync(ou => ou.UserId == userId && ou.OrganizationId == session.OrganizationId);
+                
+                if (orgUser == null || !orgUser.Any())
+                {
+                    errors.Add($"User '{user.UserName}' is not a member of the organization");
+                    continue;
+                }
+
+                var existingAttendance = await _unitOfWork.AttendanceLogs
+                    .FindAsync(al => al.UserId == userId && al.SessionId == attendDTO.SessionId);
+                
+                if (existingAttendance != null && existingAttendance.Any())
+                {
+                    errors.Add($"Attendance already recorded for user '{user.UserName}' in this session");
+                    continue;
+                }
+
+                var attendanceLog = new AttendanceLog
+                {
+                    SessionId = attendDTO.SessionId,
+                    UserId = userId,
+                    TimeStamp = DateTime.UtcNow,
+                    Result = AttendanceResult.Present,
+                    VerificationId = 0,
+                    ProofSignature = null
+                };
+
+                attendanceLogs.Add(attendanceLog);
+            }
+
+            if (errors.Any())
+            {
+                return ApiResponse.FailureResponse("Failed to save attendance", errors);
+            }
+
+            if (!attendanceLogs.Any())
+            {
+                return ApiResponse.FailureResponse("No valid attendance records to save", new List<string> { "All users failed validation" });
+            }
+
+            try
+            {
+                foreach (var log in attendanceLogs)
+                {
+                    await _unitOfWork.AttendanceLogs.AddAsync(log);
+                }
+
+                var saved = await _unitOfWork.SaveAsync();
+                
+                if (saved < 1)
+                {
+                    return ApiResponse.FailureResponse("Failed to save attendance", new List<string> { "Database save operation failed" });
+                }
+
+                return ApiResponse.SuccessResponse($"Attendance saved successfully for {attendanceLogs.Count} user(s)", 
+                    new { SavedCount = attendanceLogs.Count, SessionId = attendDTO.SessionId });
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse.FailureResponse("An error occurred while saving attendance", new List<string> { ex.Message });
+            }
+        }
     }
 }

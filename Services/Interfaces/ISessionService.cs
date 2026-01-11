@@ -10,5 +10,6 @@ namespace Project_X.Services
         Task<ApiResponse> GetSessionsByHallIdAsync(int hallId);
         Task<ApiResponse> UpdateSessionAsync(int sessionId, UpdateSessionDTO updateSessionDTO);
         Task<ApiResponse> DeleteSessionAsync(int sessionId);
+        Task<ApiResponse> SaveAttendAsync(SaveAttendDTO attendDTO);
     }
 }
