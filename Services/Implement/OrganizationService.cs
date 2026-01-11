@@ -178,5 +178,23 @@ namespace Project_X.Services
 
             return ApiResponse.SuccessResponse("Organization deleted successfully");
         }
+
+        public async Task<ApiResponse> GetUserOrganizationsAsync(string userId)
+        {
+            var user  = _userManager.FindByIdAsync(userId).Result;
+            if (user != null)
+            {
+                var organizations = await _unitOfWork.Organizations
+                    .GetUserOrganizationsAsync(userId);
+                var organizationResponses = _mapper
+                    .Map<List<OrganizationResponseDTO>>(organizations);
+                if(organizations.Count == 0)
+                {
+                    return ApiResponse.SuccessResponse("User is not part of any organizations yet.", organizationResponses);
+                }
+                return ApiResponse.SuccessResponse("User organizations retrieved successfully", organizationResponses);
+            }
+            return ApiResponse.FailureResponse("User not found.", new List<string> { "Invalid User ID" });
+        }
     }
 }

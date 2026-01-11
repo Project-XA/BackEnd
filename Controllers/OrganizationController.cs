@@ -19,28 +19,28 @@ namespace Project_X.Controllers
         }
 
         [HttpPost("create-organization")]
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateOrganization(CreateOrganizationDTO createOrganizationDTO)
         {
             if (!ModelState.IsValid)
             {
                 var errors = ModelState.Values
-                    .SelectMany(v=>v.Errors).Select(e=>e.ErrorMessage).ToList();
-                var responseFail = ApiResponse.FailureResponse("Invalid Data",errors);
+                    .SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                var responseFail = ApiResponse.FailureResponse("Invalid Data", errors);
                 return BadRequest(responseFail);
             }
 
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            
+
             var result = await _organizationService.CreateOrganizationAsync(createOrganizationDTO, userId);
-            
+
             if (result.Success)
             {
                 return Ok(result);
             }
             if (result.Message == "Unauthorized")
             {
-                 return Unauthorized(result);
+                return Unauthorized(result);
             }
             return BadRequest(result);
         }
@@ -49,7 +49,7 @@ namespace Project_X.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddMember(AddMemberDTO addMemberDTO)
         {
-             if (!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 var errors = ModelState.Values
                     .SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
@@ -102,6 +102,18 @@ namespace Project_X.Controllers
         public async Task<IActionResult> DeleteOrganization(int id)
         {
             var result = await _organizationService.DeleteOrganizationAsync(id);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+        [HttpGet("user-orgs")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetUserOrganizations()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var result = await _organizationService.GetUserOrganizationsAsync(userId!);
             if (result.Success)
             {
                 return Ok(result);

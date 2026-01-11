@@ -15,6 +15,7 @@ This document provides a detailed reference for the backend APIs available in Pr
   - [Update Organization](#update-organization)
   - [Delete Organization](#delete-organization)
   - [Add Member](#add-member)
+  - [Get User Organizations](#get-user-organizations)
 - [3. Hall APIs](#3-hall-apis)
   - [Create Hall](#create-hall)
   - [Get All Halls](#get-all-halls)
@@ -293,6 +294,50 @@ Adds an existing user to an organization.
     ```
   - `400 Bad Request`: User already exists or validation failed.
   - `404 Not Found`: Organization not found.
+
+### Get User Organizations
+Retrieves all organizations associated with the authenticated user.
+
+- **URL**: `/user-orgs`
+- **Method**: `GET`
+- **Auth**: Required (Role: `Admin`)
+- **Response**:
+  - `200 OK` (with organizations):
+    ```json
+    {
+      "success": true,
+      "message": "User organizations retrieved successfully",
+      "data": [
+        {
+          "organizationId": 1,
+          "organizationName": "My Org",
+          "organizationType": "Tech",
+          "conatactEmail": "contact@org.com",
+          "organizationCode": 1234,
+          "createdAt": "2023-10-27T10:00:00Z"
+        },
+        {
+          "organizationId": 2,
+          "organizationName": "Another Org",
+          "organizationType": "Education",
+          "conatactEmail": "info@org.com",
+          "organizationCode": 5678,
+          "createdAt": "2023-10-28T10:00:00Z"
+        }
+      ],
+      "errors": []
+    }
+    ```
+  - `200 OK` (no organizations):
+    ```json
+    {
+      "success": true,
+      "message": "User is not part of any organizations yet.",
+      "data": [],
+      "errors": []
+    }
+    ```
+  - `400 Bad Request`: User not found or error occurred.
 
 ---
 

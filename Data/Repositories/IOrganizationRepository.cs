@@ -7,5 +7,6 @@ namespace Project_X.Data.Repositories
         public Task<bool> VerfiyOrganiztionCOde(int orgCode);
         public Task<Organization?> GetByCodeAsync(int orgCode);
         public Task<bool> ValidateUser(int organizationId,string userId);
+        public Task<List<Organization>> GetUserOrganizationsAsync(string userId);
     }
 }
