@@ -28,6 +28,7 @@ This document provides a detailed reference for the backend APIs available in Pr
   - [Get Sessions By Hall ID](#get-sessions-by-hall-id)
   - [Update Session](#update-session)
   - [Delete Session](#delete-session)
+  - [Save Attendance](#save-attendance)
 - [5. User APIs](#5-user-apis)
   - [Get User Role](#get-user-role)
 
@@ -645,13 +646,54 @@ Deletes a session by ID.
     }
     ```
 
+### Save Attendance
+Records attendance for multiple users in a session.
+
+- **URL**: `/save-attend`
+- **Method**: `POST`
+- **Auth**: Required (Role: `Admin`)
+- **Request Body**:
+  ```json
+  {
+    "sessionId": 1,                        // Required, must be greater than 0
+    "usersIds": ["user-guid-1", "user-guid-2"]  // Required, at least one user
+  }
+  ```
+- **Validations**:
+  - Session must exist
+  - Session must be associated with an organization
+  - All users must exist and be members of the organization
+  - Duplicate attendance is not allowed (user cannot attend same session twice)
+- **Response**:
+  - `200 OK`:
+    ```json
+    {
+      "success": true,
+      "message": "Attendance saved successfully for 2 user(s)",
+      "data": {
+        "savedCount": 2,
+        "sessionId": 1
+      },
+      "errors": []
+    }
+    ```
+  - `400 Bad Request`: Validation errors (invalid session, user not found, user not in organization, duplicate attendance).
+    ```json
+    {
+      "success": false,
+      "message": "Failed to save attendance",
+      "data": null,
+      "errors": ["User 'johndoe' is not a member of the organization"]
+    }
+    ```
+
 ---
 
 ## 5. User APIs
 Base Path: `/api/User`
 
 ### Get User Details
-Retrieves the role of a user within a specific organization.
+Retrieves user details and a login token within a specific organization.
 
 - **URL**: `/get-user`
 - **Method**: `POST`
@@ -669,16 +711,19 @@ Retrieves the role of a user within a specific organization.
     ```json
     {
       "success": true,
-      "message": "User Found",
+      "message": "User is retrieved successfully",
       "data": {
-        "id": "e98...",
-        "fullName": "John Doe",
-        "userName": "johndoe",
-        "email": "john@example.com",
-        "phoneNumber": "123456",
-        "role": "User",
-        "createdAt": "2023-01-01T00:00:00Z",
-        "updatedAt": "2023-01-01T00:00:00Z"
+        "userResponse": {
+          "id": "e98...",
+          "fullName": "John Doe",
+          "userName": "johndoe",
+          "email": "john@example.com",
+          "phoneNumber": "123456",
+          "role": "User",
+          "createdAt": "2023-01-01T00:00:00Z",
+          "updatedAt": "2023-01-01T00:00:00Z"
+        },
+        "loginToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
       },
       "errors": []
     }
