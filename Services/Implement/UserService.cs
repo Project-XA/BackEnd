@@ -1,9 +1,13 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using Models;
 using Project_X.Data.UnitOfWork;
 using Project_X.Models.DTOs;
 using Project_X.Models.Response;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace Project_X.Services
 {
@@ -12,12 +16,14 @@ namespace Project_X.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<AppUser> _userManager;
         private readonly IMapper _mapper;
+        private readonly IAuthService _authService;
 
-        public UserService(IUnitOfWork unitOfWork, UserManager<AppUser> userManager, IMapper mapper)
+        public UserService(IUnitOfWork unitOfWork, UserManager<AppUser> userManager, IMapper mapper, IAuthService authService)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
             _mapper = mapper;
+            _authService = authService;
         }
 
         public async Task<ApiResponse> GetUserAsync(GetUserDTO userDTO)
@@ -38,7 +44,8 @@ namespace Project_X.Services
                     if (isPass)
                     {
                         var userResponse = _mapper.Map<UserResponseDTO>(user);
-                        return ApiResponse.SuccessResponse("User is retrieved successfully", userResponse);
+                        var loginToken = _authService.GenerateJwtToken(user);
+                        return ApiResponse.SuccessResponse("User is retrieved successfully", new { userResponse, loginToken });
                     }
                     else
                     {

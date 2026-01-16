@@ -79,32 +79,7 @@ namespace Project_X.Services
                 var result = await _userManager.CheckPasswordAsync(user, loginDTO.Password);
                 if (result)
                 {
-                    var claims = new List<Claim>
-                    {
-                        new Claim(JwtRegisteredClaimNames.Email, loginDTO.Email),
-                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                        new Claim(ClaimTypes.NameIdentifier, user.Id)
-                    };
-                    var roles = await _userManager.GetRolesAsync(user);
-                    foreach (var role in roles)
-                    {
-                        claims.Add(new Claim(ClaimTypes.Role, role));
-                    }
-                    var securityKey = Environment.GetEnvironmentVariable("SecurityKey");
-                    if (string.IsNullOrEmpty(securityKey))
-                    {
-                        throw new InvalidOperationException("SecurityKey is not configured.");
-                    }
-                    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityKey));
-                    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-                    var token = new JwtSecurityToken(
-                        claims: claims,
-                        notBefore: DateTime.UtcNow,
-                        expires: DateTime.UtcNow.AddDays(365),
-                        signingCredentials: creds
-                    );
-                    var loginToken = new JwtSecurityTokenHandler().WriteToken(token);
+                    var loginToken = GenerateJwtToken(user);
                     return ApiResponse.SuccessResponse("Login done Successfully", loginToken);
                 }
             }
@@ -181,6 +156,34 @@ namespace Project_X.Services
             await _unitOfWork.SaveAsync();
 
             return ApiResponse.SuccessResponse("Password Reset Successfully");
+        }
+        public string GenerateJwtToken(AppUser user)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Email, user.Email!),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Id)
+            };
+            var roles = _userManager.GetRolesAsync(user).Result;
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+            var securityKey = Environment.GetEnvironmentVariable("SecurityKey");
+            if (string.IsNullOrEmpty(securityKey))
+            {
+                throw new InvalidOperationException("SecurityKey is not configured.");
+            }
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityKey));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var token = new JwtSecurityToken(
+                claims: claims,
+                notBefore: DateTime.UtcNow,
+                expires: DateTime.UtcNow.AddDays(365),
+                signingCredentials: creds
+            );
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }
