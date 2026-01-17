@@ -11,10 +11,10 @@ namespace Project_X.Data.Repositories
             : base(context)
         {
         }
-        public async Task<Hall?> GetHallByNameAsync(string hallName)
+        public async Task<Hall?> GetHallByNameAsync(string hallName, int organizationId)
         {
             return await _context.Halls
-                .FirstOrDefaultAsync(h => h.HallName == hallName);
+                .FirstOrDefaultAsync(h => h.HallName == hallName && h.OrganizationId == organizationId);
         }
 
         public async Task<List<Hall>> GetHallsByOrganizationIdAsync(int organizationId)

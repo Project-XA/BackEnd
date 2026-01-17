@@ -20,7 +20,7 @@ namespace Project_X.Services
 
         public async Task<ApiResponse> CreateHallAsync(HallDTO hallDTO)
         {
-            var hall = await _unitOfWork.Halls.GetHallByNameAsync(hallDTO.HallName);
+            var hall = await _unitOfWork.Halls.GetHallByNameAsync(hallDTO.HallName, hallDTO.OrganizationId);
             if (hall != null)
             {
                 return ApiResponse.FailureResponse("Hall with this name already exists.", new List<string> { "Duplicate Hall Name" });
@@ -76,7 +76,7 @@ namespace Project_X.Services
             // Check for unique name collision if name is changed
             if (hall.HallName != updateHallDTO.HallName)
             {
-                var existingHall = await _unitOfWork.Halls.GetHallByNameAsync(updateHallDTO.HallName);
+                var existingHall = await _unitOfWork.Halls.GetHallByNameAsync(updateHallDTO.HallName, hall.OrganizationId);
                 if (existingHall != null)
                 {
                     return ApiResponse.FailureResponse("Hall with this name already exists.", new List<string> { "Duplicate Hall Name" });
