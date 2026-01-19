@@ -196,5 +196,19 @@ namespace Project_X.Services
             }
             return ApiResponse.FailureResponse("User not found.", new List<string> { "Invalid User ID" });
         }
+
+        public async Task<ApiResponse> GetOrganizationUsersAsync(int organizationId)
+        {
+            var organization = await _unitOfWork.Organizations.GetByIdAsync(organizationId);
+            if (organization == null)
+            {
+                return ApiResponse.FailureResponse("Organization not found.", new List<string> { "Invalid Organization ID" });
+            }
+
+            var users = await _unitOfWork.Organizations.GetOrganizationUsersAsync(organizationId);
+            var userResponses = _mapper.Map<List<UserResponseDTO>>(users);
+
+            return ApiResponse.SuccessResponse("Organization users retrieved successfully", userResponses);
+        }
     }
 }

@@ -11,5 +11,6 @@ namespace Project_X.Services
         Task<ApiResponse> UpdateOrganizationAsync(int organizationId, UpdateOrganizationDTO updateOrganizationDTO);
         Task<ApiResponse> DeleteOrganizationAsync(int organizationId);
         Task<ApiResponse> GetUserOrganizationsAsync(string userId);
+        Task<ApiResponse> GetOrganizationUsersAsync(int organizationId);
     }
 }

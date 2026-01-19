@@ -120,5 +120,17 @@ namespace Project_X.Controllers
             }
             return BadRequest(result);
         }
+
+        [HttpGet("{id}/users")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetOrganizationUsers(int id)
+        {
+            var result = await _organizationService.GetOrganizationUsersAsync(id);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return NotFound(result);
+        }
     }
 }

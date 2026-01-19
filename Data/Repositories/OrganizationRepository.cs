@@ -36,5 +36,15 @@ namespace Project_X.Data.Repositories
                 .ToListAsync();
             return result;
         }
+
+        public async Task<List<AppUser>> GetOrganizationUsersAsync(int organizationId)
+        {
+            var users = await _context.OrganizationUser
+                .Where(ou => ou.OrganizationId == organizationId)
+                .Include(ou => ou.User)
+                .Select(ou => ou.User)
+                .ToListAsync();
+            return users;
+        }
     }
 }
