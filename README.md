@@ -16,6 +16,7 @@ This document provides a detailed reference for the backend APIs available in Pr
   - [Delete Organization](#delete-organization)
   - [Add Member](#add-member)
   - [Get User Organizations](#get-user-organizations)
+  - [Get Organization Users](#get-organization-users)
 - [3. Hall APIs](#3-hall-apis)
   - [Create Hall](#create-hall)
   - [Get All Halls](#get-all-halls)
@@ -339,6 +340,45 @@ Retrieves all organizations associated with the authenticated user.
     }
     ```
   - `400 Bad Request`: User not found or error occurred.
+
+### Get Organization Users
+Retrieves all users belonging to a specific organization.
+
+- **URL**: `/{id}/users`
+- **Method**: `GET`
+- **Auth**: Required (Role: `Admin`)
+- **Response**:
+  - `200 OK`:
+    ```json
+    {
+      "success": true,
+      "message": "Organization users retrieved successfully",
+      "data": [
+        {
+          "id": "user-guid-1",
+          "fullName": "John Doe",
+          "userName": "johndoe",
+          "email": "john@example.com",
+          "phoneNumber": "1234567890",
+          "role": "Admin",
+          "createdAt": "2023-10-27T10:00:00Z",
+          "updatedAt": "2023-10-27T10:00:00Z"
+        },
+        {
+          "id": "user-guid-2",
+          "fullName": "Jane Smith",
+          "userName": "janesmith",
+          "email": "jane@example.com",
+          "phoneNumber": "0987654321",
+          "role": "User",
+          "createdAt": "2023-10-28T10:00:00Z",
+          "updatedAt": "2023-10-28T10:00:00Z"
+        }
+      ],
+      "errors": []
+    }
+    ```
+  - `404 Not Found`: Organization not found.
 
 ---
 
