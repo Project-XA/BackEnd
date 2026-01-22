@@ -44,6 +44,8 @@ namespace Project_X.Services
                     if (isPass)
                     {
                         var userResponse = _mapper.Map<UserResponseDTO>(user);
+                        userResponse.OrganizationId = organization.OrganizationId;
+                        userResponse.OrganizationName = organization.OrganizationName;
                         var loginToken = _authService.GenerateJwtToken(user);
                         return ApiResponse.SuccessResponse("User is retrieved successfully", new { userResponse, loginToken });
                     }

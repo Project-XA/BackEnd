@@ -777,6 +777,8 @@ Retrieves user details and a login token within a specific organization.
       "data": {
         "userResponse": {
           "id": "e98...",
+          "organizationId": "1",
+          "organizationName": "My Org",
           "fullName": "John Doe",
           "userName": "johndoe",
           "email": "john@example.com",
