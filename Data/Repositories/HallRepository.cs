@@ -5,7 +5,7 @@ using Project_X.Models;
 
 namespace Project_X.Data.Repositories
 {
-    public class HallRepository:Repository<Hall>
+    public class HallRepository:Repository<Hall>, IHallRepository
     {
         public HallRepository(AppDbConext context) 
             : base(context)

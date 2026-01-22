@@ -15,6 +15,7 @@ namespace Project_X.Models.DTOs
         [RegularExpression(@"^[a-zA-Z0-9\s]{3,50}$",
             ErrorMessage = "Session name must be between 3 and 50 characters and contain only letters, numbers, and spaces.")]
         public string SessionName { get; set; }
+        public string HallName { get; set; }
         public DateTime CreatedAt { get; set; }
         [Required]
         public ConnectionType ConnectionType { get; set; }
