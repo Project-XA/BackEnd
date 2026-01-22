@@ -26,7 +26,7 @@ namespace Project_X.Services
         {
             if (string.IsNullOrEmpty(userId))
             {
-                 return ApiResponse.FailureResponse("Unauthorized", new List<string> { "Unauthorized Access" });
+                return ApiResponse.FailureResponse("Unauthorized", new List<string> { "Unauthorized Access" });
             }
 
             var user = await _userManager.FindByIdAsync(userId);
@@ -34,16 +34,26 @@ namespace Project_X.Services
             {
                 return ApiResponse.FailureResponse("Unauthorized", new List<string> { "Unauthorized Access" });
             }
+            var hall = await _unitOfWork.Halls.GetByIdAsync(createSessionDTO.HallId);
+            if (hall == null)
+            {
+                return ApiResponse.FailureResponse("Hall not found", new List<string> { "Invalid Hall ID" });
+            }
+
+            if (hall.OrganizationId != createSessionDTO.OrganizationId)
+            {
+                return ApiResponse.FailureResponse("Hall mismatch", new List<string> { "Hall does not belong to the specified organization" });
+            }
 
             var newSession = _mapper.Map<AttendanceSession>(createSessionDTO);
             await _unitOfWork.AttendanceSessions.AddAsync(newSession);
             var isSuccess = await _unitOfWork.SaveAsync();
-            
+
             if (isSuccess < 1)
             {
                 return ApiResponse.FailureResponse("Unsuccessful Save change", new List<string> { "Unexpected Error Happened while saving Changes" });
             }
-            
+
             return ApiResponse.SuccessResponse("Session Created Successfully");
         }
         public async Task<ApiResponse> GetSessionByIdAsync(int sessionId)
