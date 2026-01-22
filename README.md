@@ -527,12 +527,16 @@ Creates a new attendance session.
 - **URL**: `/Create-Session`
 - **Method**: `POST`
 - **Auth**: Required (Role: `Admin`)
+- **Validations**:
+  - Hall must exist (validated by `hallId`)
+  - Hall must belong to the specified organization
 - **Request Body**:
   ```json
   {
     "organizationId": 1,
     "createdBy": "userid-guid",
     "sessionName": "Morning Session",
+    "hallName": "Room101",
     "connectionType": "WIFI",
     "longitude": 0,
     "latitude": 0,
@@ -552,6 +556,24 @@ Creates a new attendance session.
       "message": "Session Created Successfully",
       "data": null,
       "errors": []
+    }
+    ```
+  - `400 Bad Request` (Hall not found):
+    ```json
+    {
+      "success": false,
+      "message": "Hall not found",
+      "data": null,
+      "errors": ["Invalid Hall ID"]
+    }
+    ```
+  - `400 Bad Request` (Hall mismatch):
+    ```json
+    {
+      "success": false,
+      "message": "Hall mismatch",
+      "data": null,
+      "errors": ["Hall does not belong to the specified organization"]
     }
     ```
 
