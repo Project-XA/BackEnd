@@ -45,6 +45,21 @@ namespace Project_X.Data.Repository
             return await _dbSet.Where(predicate).ToListAsync();
         }
 
+        public async Task<List<T>> FindAllAsync(Expression<Func<T, bool>> predicate, string[] includes = null)
+        {
+            IQueryable<T> query = _dbSet;
+
+            if (includes != null)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+
+            return await query.Where(predicate).ToListAsync();
+        }
+
         public void Update(T entity)
         {
            _dbSet.Update(entity);

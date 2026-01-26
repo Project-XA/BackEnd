@@ -249,5 +249,20 @@ namespace Project_X.Services
                 return ApiResponse.FailureResponse("An error occurred while saving attendance", new List<string> { ex.Message });
             }
         }
+        public async Task<ApiResponse> GetSessionAttendanceAsync(int sessionId)
+        {
+            var session = await _unitOfWork.AttendanceSessions.GetByIdAsync(sessionId);
+            if (session == null)
+            {
+                return ApiResponse.FailureResponse("Session not found", new List<string> { "Invalid Session ID" });
+            }
+            var logs = await _unitOfWork.AttendanceLogs.FindAllAsync(
+                l => l.SessionId == sessionId,
+                new[] { "User", "VerificationSession" }
+            );
+
+            var attendanceRecords = _mapper.Map<List<AttendanceRecordDTO>>(logs);
+            return ApiResponse.SuccessResponse("Attendance retrieved successfully", attendanceRecords);
+        }
     }
 }

@@ -39,6 +39,12 @@ namespace Project_X.Models.Mapping
             CreateMap<AttendanceSession, SessionResponseDTO>();
             CreateMap<CreateVerificationSessionDTO, VerificationSession>()
                 .ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src => DateTime.UtcNow));
+            
+            CreateMap<AttendanceLog, AttendanceRecordDTO>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName))
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.User.FullName))
+                .ForMember(dest => dest.VerificationType, opt => opt.MapFrom(src => src.VerificationSession != null ? src.VerificationSession.VerificationType : (VerificationType?)null))
+                .ForMember(dest => dest.MatchScore, opt => opt.MapFrom(src => src.VerificationSession != null ? src.VerificationSession.MatchScore : (double?)null));
         }
     }
 }

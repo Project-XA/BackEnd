@@ -503,7 +503,7 @@ namespace Project_X.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<byte[]>("ProofSignture")
+                    b.Property<byte[]>("ProofSignature")
                         .IsRequired()
                         .HasColumnType("bytea");
 
