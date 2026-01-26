@@ -33,6 +33,8 @@ This document provides a detailed reference for the backend APIs available in Pr
   - [Save Attendance](#save-attendance)
   - [Get Session Attendance](#get-session-attendance)
 - [5. User APIs](#5-user-apis)
+  - [Get User Statistics](#get-user-statistics)
+  - [Get User Details](#get-user-details)
   - [Get User Role](#get-user-role)
 
 ## Base URL
@@ -826,6 +828,29 @@ Retrieves the list of attendees for a specific session.
 
 ## 5. User APIs
 Base Path: `/api/User`
+
+### Get User Statistics
+Retrieves attendance statistics for the authenticated user.
+
+- **URL**: `/statistics`
+- **Method**: `GET`
+- **Auth**: Required
+- **Response**:
+  - `200 OK`:
+    ```json
+    {
+      "success": true,
+      "message": "User statistics retrieved successfully",
+      "data": {
+        "totalSessions": 10,
+        "attendedSessions": 8,
+        "missedSessions": 2,
+        "attendancePercentage": 80.0
+      },
+      "errors": []
+    }
+    ```
+  - `400 Bad Request`: Error occurred.
 
 ### Get User Details
 Retrieves user details and a login token within a specific organization.

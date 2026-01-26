@@ -7,5 +7,6 @@ namespace Project_X.Services
     {
         Task<ApiResponse> GetUserAsync(GetUserDTO UserDTO);
         Task<ApiResponse> GetUserRoleAsync(GetUserDTO UserDTO);
+        Task<ApiResponse> GetUserStatisticsAsync(string userId);
     }
 }

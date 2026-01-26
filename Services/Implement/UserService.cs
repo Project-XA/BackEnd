@@ -86,5 +86,37 @@ namespace Project_X.Services
             }
             return ApiResponse.FailureResponse("Invalid User Data", new List<string> { "Wrong Email Or password" });
         }
+        public async Task<ApiResponse> GetUserStatisticsAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return ApiResponse.FailureResponse("User not found", new List<string> { "Invalid User ID" });
+            }
+
+            var organizations = await _unitOfWork.Organizations.GetUserOrganizationsAsync(userId);
+            var orgIds = organizations.Select(o => o.OrganizationId).ToList();
+
+            if (!orgIds.Any())
+            {
+                return ApiResponse.SuccessResponse("User statistics retrieved successfully", new UserStatisticsDTO());
+            }
+            var totalSessions = await _unitOfWork.AttendanceSessions.CountAsync(s => orgIds.Contains(s.OrganizationId));
+            var attendedSessions = await _unitOfWork.AttendanceLogs.CountAsync(l => l.UserId == userId);
+            var missedSessions = totalSessions - attendedSessions;
+            if (missedSessions < 0) missedSessions = 0;
+
+            double attendancePercentage = totalSessions > 0 ? ((double)attendedSessions / totalSessions) * 100 : 0;
+
+            var stats = new UserStatisticsDTO
+            {
+                TotalSessions = totalSessions,
+                AttendedSessions = attendedSessions,
+                MissedSessions = missedSessions,
+                AttendancePercentage = Math.Round(attendancePercentage, 2)
+            };
+
+            return ApiResponse.SuccessResponse("User statistics retrieved successfully", stats);
+        }
     }
 }

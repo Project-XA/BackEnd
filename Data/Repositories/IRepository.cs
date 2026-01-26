@@ -9,6 +9,7 @@ namespace Project_X.Data.Repositories
         public Task<List<T>> GetAllAsync();
         public Task<List<T>> FindAsync(Expression<Func<T, bool>> predicate);
         public Task<List<T>> FindAllAsync(Expression<Func<T, bool>> predicate, string[] includes = null);
+        public Task<int> CountAsync(Expression<Func<T, bool>> predicate);
         public void Update(T entity);
         public void Delete(T entity);
     }
