@@ -8,8 +8,8 @@ namespace Project_X.Models.DTOs
         [Range(1, int.MaxValue, ErrorMessage = "Session ID must be greater than 0")]
         public int SessionId { get; set; }
 
-        [Required(ErrorMessage = "Users list is required")]
-        [MinLength(1, ErrorMessage = "At least one user must be provided")]
-        public List<string> UsersIds { get; set; }
+        [Required(ErrorMessage = "Verification IDs list is required")]
+        [MinLength(1, ErrorMessage = "At least one verification ID must be provided")]
+        public List<int> VerificationIds { get; set; }
     }
 }

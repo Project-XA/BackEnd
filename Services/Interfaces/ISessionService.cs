@@ -11,5 +11,6 @@ namespace Project_X.Services
         Task<ApiResponse> UpdateSessionAsync(int sessionId, UpdateSessionDTO updateSessionDTO);
         Task<ApiResponse> DeleteSessionAsync(int sessionId);
         Task<ApiResponse> SaveAttendAsync(SaveAttendDTO attendDTO);
+        Task<ApiResponse> CreateVerificationSessionAsync(CreateVerificationSessionDTO verificationDTO);
     }
 }

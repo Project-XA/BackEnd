@@ -1,24 +1,21 @@
-﻿using Models;
+using System.ComponentModel.DataAnnotations;
 using Project_X.Models.Enums;
 
-namespace Project_X.Models
+namespace Project_X.Models.DTOs
 {
-    public class VerificationSession
+    public class CreateVerificationSessionDTO
     {
-        public int VerificationId { get; set; }
+        [Required]
         public string UserId { get; set; }
-        public AppUser User { get; set; }
+        [Required]
         public int SessionId { get; set; }
-        public AttendanceSession Session { get; set; }
-        public AttendanceLog Log { get; set; }
-        public DateTime TimeStamp { get; set; }
-        public string NetworkSSID { get; set; }
+        [Required]
         public VerificationType VerificationType { get; set; }
         public double MatchScore { get; set; }
         public bool IsSuccessed { get; set; }
         public double Longitude { get; set; }
         public double Latitude { get; set; }
         public byte[] ProofSignature { get; set; }
-
+        public string NetworkSSID { get; set; }
     }
 }

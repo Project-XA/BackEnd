@@ -35,7 +35,10 @@ namespace Project_X.Models.Mapping
             CreateMap<AppUser, UserResponseDTO>().ReverseMap();
             CreateMap<UpdateOrganizationDTO, Organization>();
             CreateMap<UpdateSessionDTO, AttendanceSession>();
+            CreateMap<UpdateSessionDTO, AttendanceSession>();
             CreateMap<AttendanceSession, SessionResponseDTO>();
+            CreateMap<CreateVerificationSessionDTO, VerificationSession>()
+                .ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src => DateTime.UtcNow));
         }
     }
 }

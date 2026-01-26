@@ -113,6 +113,32 @@ namespace Project_X.Services
             return ApiResponse.SuccessResponse("Session deleted successfully");
         }
 
+        public async Task<ApiResponse> CreateVerificationSessionAsync(CreateVerificationSessionDTO verificationDTO)
+        {
+            var user = await _userManager.FindByIdAsync(verificationDTO.UserId);
+            if (user == null)
+            {
+                return ApiResponse.FailureResponse("User not found", new List<string> { "Invalid User ID" });
+            }
+
+            var session = await _unitOfWork.AttendanceSessions.GetByIdAsync(verificationDTO.SessionId);
+            if (session == null)
+            {
+                return ApiResponse.FailureResponse("Session not found", new List<string> { "Invalid Session ID" });
+            }
+
+            var verificationSession = _mapper.Map<VerificationSession>(verificationDTO);
+            await _unitOfWork.VerificationSessions.AddAsync(verificationSession);
+            var isSuccess = await _unitOfWork.SaveAsync();
+
+            if (isSuccess < 1)
+            {
+                return ApiResponse.FailureResponse("Unsuccessful Save change", new List<string> { "Unexpected Error Happened while saving Changes" });
+            }
+
+            return ApiResponse.SuccessResponse("Verification Session Created Successfully", new { VerificationId = verificationSession.VerificationId });
+        }
+
         public async Task<ApiResponse> SaveAttendAsync(SaveAttendDTO attendDTO)
         {
             var session = await _unitOfWork.AttendanceSessions.GetByIdAsync(attendDTO.SessionId);
@@ -126,17 +152,37 @@ namespace Project_X.Services
                 return ApiResponse.FailureResponse("Session is not associated with an organization", new List<string> { "Invalid Session Configuration" });
             }
 
-            var uniqueUserIds = attendDTO.UsersIds.Distinct().ToList();
+            var uniqueVerificationIds = attendDTO.VerificationIds.Distinct().ToList();
 
             var errors = new List<string>();
             var attendanceLogs = new List<AttendanceLog>();
 
-            foreach (var userId in uniqueUserIds)
+            foreach (var verificationId in uniqueVerificationIds)
             {
+                var verification = await _unitOfWork.VerificationSessions.GetByIdAsync(verificationId);
+                if (verification == null)
+                {
+                    errors.Add($"Verification with ID '{verificationId}' not found");
+                    continue;
+                }
+
+                if (verification.SessionId != attendDTO.SessionId)
+                {
+                    errors.Add($"Verification '{verificationId}' does not belong to the specified session");
+                    continue;
+                }
+                
+                if (verification.IsSuccessed == false)
+                {
+                    errors.Add($"Verification '{verificationId}' was not successful");
+                    continue;
+                }
+
+                var userId = verification.UserId;
                 var user = await _userManager.FindByIdAsync(userId);
                 if (user == null)
                 {
-                    errors.Add($"User with ID '{userId}' not found");
+                    errors.Add($"User associated with verification '{verificationId}' not found");
                     continue;
                 }
 
@@ -163,9 +209,9 @@ namespace Project_X.Services
                     SessionId = attendDTO.SessionId,
                     UserId = userId,
                     TimeStamp = DateTime.UtcNow,
-                    Result = AttendanceResult.Present,
-                    VerificationId = 0,
-                    ProofSignature = null
+                    Result = AttendanceResult.Present, // Assuming success
+                    VerificationId = verificationId,
+                    ProofSignature = verification.ProofSignature
                 };
 
                 attendanceLogs.Add(attendanceLog);
@@ -178,7 +224,7 @@ namespace Project_X.Services
 
             if (!attendanceLogs.Any())
             {
-                return ApiResponse.FailureResponse("No valid attendance records to save", new List<string> { "All users failed validation" });
+                return ApiResponse.FailureResponse("No valid attendance records to save", new List<string> { "All verifications failed validation" });
             }
 
             try
