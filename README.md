@@ -29,6 +29,7 @@ This document provides a detailed reference for the backend APIs available in Pr
   - [Get Sessions By Hall ID](#get-sessions-by-hall-id)
   - [Update Session](#update-session)
   - [Delete Session](#delete-session)
+  - [Create Verification Session](#create-verification-session)
   - [Save Attendance](#save-attendance)
 - [5. User APIs](#5-user-apis)
   - [Get User Role](#get-user-role)
@@ -708,8 +709,42 @@ Deletes a session by ID.
     }
     ```
 
+### Create Verification Session
+Records a verification attempt (e.g., face match, fingerprint) for a user in a session. This should be called *before* saving attendance.
+
+- **URL**: `/create-verification`
+- **Method**: `POST`
+- **Auth**: Required (Role: `Admin`)
+- **Request Body**:
+  ```json
+  {
+    "userId": "user-guid",           // Required
+    "sessionId": 1,                  // Required
+    "verificationType": "Face",      // Required (Values: "Face", "FingerPrint")
+    "matchScore": 95.5,
+    "isSuccessed": true,
+    "longitude": 12.3456,
+    "latitude": 78.9012,
+    "proofSignature": "base64encodedstring", // Optional byte array
+    "networkSSID": "WifiName"
+  }
+  ```
+- **Response**:
+  - `200 OK`:
+    ```json
+    {
+      "success": true,
+      "message": "Verification Session Created Successfully",
+      "data": {
+        "verificationId": 100
+      },
+      "errors": []
+    }
+    ```
+  - `400 Bad Request`: Validation errors.
+
 ### Save Attendance
-Records attendance for multiple users in a session.
+Records attendance for multiple users in a session using their verification IDs.
 
 - **URL**: `/save-attend`
 - **Method**: `POST`
@@ -718,14 +753,16 @@ Records attendance for multiple users in a session.
   ```json
   {
     "sessionId": 1,                        // Required, must be greater than 0
-    "usersIds": ["user-guid-1", "user-guid-2"]  // Required, at least one user
+    "verificationIds": [100, 101]          // Required, list of verification IDs returned from Create Verification Session
   }
   ```
 - **Validations**:
   - Session must exist
   - Session must be associated with an organization
-  - All users must exist and be members of the organization
-  - Duplicate attendance is not allowed (user cannot attend same session twice)
+  - Verifications must exist and belong to the session
+  - Verifications must be successful
+  - Users associated with verifications must be members of the organization
+  - Duplicate attendance is not allowed
 - **Response**:
   - `200 OK`:
     ```json
@@ -739,13 +776,13 @@ Records attendance for multiple users in a session.
       "errors": []
     }
     ```
-  - `400 Bad Request`: Validation errors (invalid session, user not found, user not in organization, duplicate attendance).
+  - `400 Bad Request`: Validation errors.
     ```json
     {
       "success": false,
       "message": "Failed to save attendance",
       "data": null,
-      "errors": ["User 'johndoe' is not a member of the organization"]
+      "errors": ["Verification '100' was not successful"]
     }
     ```
 
