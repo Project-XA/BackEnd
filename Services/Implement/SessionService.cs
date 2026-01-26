@@ -153,54 +153,68 @@ namespace Project_X.Services
             }
 
             var uniqueVerificationIds = attendDTO.VerificationIds.Distinct().ToList();
+            var verifications = await _unitOfWork.VerificationSessions.FindAllAsync(
+                v => uniqueVerificationIds.Contains(v.VerificationId));
 
             var errors = new List<string>();
             var attendanceLogs = new List<AttendanceLog>();
-
-            foreach (var verificationId in uniqueVerificationIds)
+            
+            var foundVerificationIds = verifications.Select(v => v.VerificationId).ToHashSet();
+            foreach (var vId in uniqueVerificationIds)
             {
-                var verification = await _unitOfWork.VerificationSessions.GetByIdAsync(verificationId);
-                if (verification == null)
+                if (!foundVerificationIds.Contains(vId))
                 {
-                    errors.Add($"Verification with ID '{verificationId}' not found");
-                    continue;
+                    errors.Add($"Verification with ID '{vId}' not found");
                 }
+            }
 
+            var usersToVerify = new List<string>();
+            var validVerifications = new List<VerificationSession>();
+
+            foreach (var verification in verifications)
+            {
                 if (verification.SessionId != attendDTO.SessionId)
                 {
-                    errors.Add($"Verification '{verificationId}' does not belong to the specified session");
+                    errors.Add($"Verification '{verification.VerificationId}' does not belong to the specified session");
                     continue;
                 }
                 
                 if (verification.IsSuccessed == false)
                 {
-                    errors.Add($"Verification '{verificationId}' was not successful");
+                    errors.Add($"Verification '{verification.VerificationId}' was not successful");
                     continue;
                 }
+                usersToVerify.Add(verification.UserId);
+                validVerifications.Add(verification);
+            }
+            
+            if (!usersToVerify.Any())
+            {
+                 if (errors.Any()) return ApiResponse.FailureResponse("Failed to save attendance", errors);
+                 return ApiResponse.FailureResponse("No valid verifications found", new List<string> { "No valid verifications to process" });
+            }
 
+            var orgUsers = await _unitOfWork.OrganizationUsers.FindAllAsync(
+                ou => ou.OrganizationId == session.OrganizationId && usersToVerify.Contains(ou.UserId));
+            
+            var validOrgUserIds = orgUsers.Select(ou => ou.UserId).ToHashSet();
+            var existingLogs = await _unitOfWork.AttendanceLogs.FindAllAsync(
+                log => log.SessionId == attendDTO.SessionId && usersToVerify.Contains(log.UserId));
+            
+            var existingLogUserIds = existingLogs.Select(l => l.UserId).ToHashSet();
+            foreach (var verification in validVerifications)
+            {
                 var userId = verification.UserId;
-                var user = await _userManager.FindByIdAsync(userId);
-                if (user == null)
+
+                if (!validOrgUserIds.Contains(userId))
                 {
-                    errors.Add($"User associated with verification '{verificationId}' not found");
+                    errors.Add($"User associated with verification '{verification.VerificationId}' is not a member of the organization");
                     continue;
                 }
 
-                var orgUser = await _unitOfWork.OrganizationUsers
-                    .FindAsync(ou => ou.UserId == userId && ou.OrganizationId == session.OrganizationId);
-                
-                if (orgUser == null || !orgUser.Any())
+                if (existingLogUserIds.Contains(userId))
                 {
-                    errors.Add($"User '{user.UserName}' is not a member of the organization");
-                    continue;
-                }
-
-                var existingAttendance = await _unitOfWork.AttendanceLogs
-                    .FindAsync(al => al.UserId == userId && al.SessionId == attendDTO.SessionId);
-                
-                if (existingAttendance != null && existingAttendance.Any())
-                {
-                    errors.Add($"Attendance already recorded for user '{user.UserName}' in this session");
+                    errors.Add($"Attendance already recorded for user associated with verification '{verification.VerificationId}'");
                     continue;
                 }
 
@@ -209,8 +223,8 @@ namespace Project_X.Services
                     SessionId = attendDTO.SessionId,
                     UserId = userId,
                     TimeStamp = DateTime.UtcNow,
-                    Result = AttendanceResult.Present, // Assuming success
-                    VerificationId = verificationId,
+                    Result = AttendanceResult.Present,
+                    VerificationId = verification.VerificationId,
                     ProofSignature = verification.ProofSignature
                 };
 
