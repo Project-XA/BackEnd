@@ -31,6 +31,7 @@ This document provides a detailed reference for the backend APIs available in Pr
   - [Delete Session](#delete-session)
   - [Create Verification Session](#create-verification-session)
   - [Save Attendance](#save-attendance)
+  - [Get Session Attendance](#get-session-attendance)
 - [5. User APIs](#5-user-apis)
   - [Get User Role](#get-user-role)
 
@@ -787,6 +788,41 @@ Records attendance for multiple users in a session using their verification IDs.
     ```
 
 ---
+
+### Get Session Attendance
+Retrieves the list of attendees for a specific session.
+
+- **URL**: `/{sessionId}/attendance`
+- **Method**: `GET`
+- **Auth**: Required (Role: `Admin`)
+- **Response**:
+  - `200 OK`:
+    ```json
+    {
+      "success": true,
+      "message": "Attendance retrieved successfully",
+      "data": [
+        {
+          "userId": "user-guid-1",
+          "userName": "johndoe",
+          "fullName": "John Doe",
+          "timeStamp": "2023-10-27T10:15:00Z",
+          "verificationType": "Face",
+          "matchScore": 98.5
+        },
+        {
+          "userId": "user-guid-2",
+          "userName": "janesmith",
+          "fullName": "Jane Smith",
+          "timeStamp": "2023-10-27T10:20:00Z",
+          "verificationType": "FingerPrint",
+          "matchScore": null
+        }
+      ],
+      "errors": []
+    }
+    ```
+  - `400 Bad Request`: Session not found.
 
 ## 5. User APIs
 Base Path: `/api/User`
