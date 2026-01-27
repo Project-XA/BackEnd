@@ -36,6 +36,8 @@ This document provides a detailed reference for the backend APIs available in Pr
   - [Get User Statistics](#get-user-statistics)
   - [Get User Details](#get-user-details)
   - [Get User Role](#get-user-role)
+- [6. Report APIs](#6-report-apis)
+  - [Get Session Attendance CSV](#get-session-attendance-csv)
 
 ## Base URL
 `http://localhost:7180/api` (or your configured port)
@@ -916,7 +918,22 @@ Retrieves just the role of a user within a specific organization.
     }
     ```
 
-## 6. Enums
+## 6. Report APIs
+Base Path: `/api/Report`
+
+### Get Session Attendance CSV
+Downloads a CSV file containing the attendance records for a specific session.
+
+- **URL**: `/session/{sessionId}/csv`
+- **Method**: `GET`
+- **Auth**: Required (Role: `Admin`)
+- **Response**:
+  - `200 OK`: Returns a CSV file download (Content-Type: `text/csv`).
+  - `401 Unauthorized`: User is not Admin.
+
+---
+
+## 7. Enums
 
 ### UserRole
 - `Admin`

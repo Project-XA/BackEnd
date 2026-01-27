@@ -133,6 +133,7 @@ namespace Project_X
             builder.Services.AddScoped<ISessionService, SessionService>();
             builder.Services.AddScoped<IHallService, HallService>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IReportService, ReportService>();
             var app = builder.Build();
             using(var scope = app.Services.CreateScope())
             {
