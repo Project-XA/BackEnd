@@ -8,7 +8,7 @@ namespace Project_X.Models
         public int LogId { get; set; }
         public int SessionId { get; set; }
         public string UserId { get; set; }
-        public int VerificationId { get; set; }
+        public int? VerificationId { get; set; }
         public AttendanceSession Session { get; set; }
         public AppUser User { get; set; }
         public VerificationSession VerificationSession { get; set; }

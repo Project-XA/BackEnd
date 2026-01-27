@@ -749,7 +749,7 @@ Records a verification attempt (e.g., face match, fingerprint) for a user in a s
   - `400 Bad Request`: Validation errors.
 
 ### Save Attendance
-Records attendance for multiple users in a session using their verification IDs.
+Records attendance for multiple users in a session.
 
 - **URL**: `/save-attend`
 - **Method**: `POST`
@@ -758,24 +758,30 @@ Records attendance for multiple users in a session using their verification IDs.
   ```json
   {
     "sessionId": 1,                        // Required, must be greater than 0
-    "verificationIds": [100, 101]          // Required, list of verification IDs returned from Create Verification Session
+    "attendanceLogs": [                    // Required, list of attendance log items
+      {
+        "userId": "user-guid-1",
+        "timeStamp": "2023-10-27T10:00:00Z",
+        "result": "Present",               // Values: "Present", "Absent", "Late", "Excused"
+        "proofSignature": "base64...",     // Optional
+        "verificationId": 0                // Optional
+      }
+    ]
   }
   ```
 - **Validations**:
   - Session must exist
   - Session must be associated with an organization
-  - Verifications must exist and belong to the session
-  - Verifications must be successful
-  - Users associated with verifications must be members of the organization
+  - Users must be members of the organization
   - Duplicate attendance is not allowed
 - **Response**:
   - `200 OK`:
     ```json
     {
       "success": true,
-      "message": "Attendance saved successfully for 2 user(s)",
+      "message": "Attendance saved successfully for 1 user(s)",
       "data": {
-        "savedCount": 2,
+        "savedCount": 1,
         "sessionId": 1
       },
       "errors": []
@@ -787,7 +793,8 @@ Records attendance for multiple users in a session using their verification IDs.
       "success": false,
       "message": "Failed to save attendance",
       "data": null,
-      "errors": ["Verification '100' was not successful"]
+      "errors": ["User 'user-guid-1' is not a member of the organization"]
+    }
     }
     ```
 

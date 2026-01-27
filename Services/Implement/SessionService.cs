@@ -152,80 +152,44 @@ namespace Project_X.Services
                 return ApiResponse.FailureResponse("Session is not associated with an organization", new List<string> { "Invalid Session Configuration" });
             }
 
-            var uniqueVerificationIds = attendDTO.VerificationIds.Distinct().ToList();
-            var verifications = await _unitOfWork.VerificationSessions.FindAllAsync(
-                v => uniqueVerificationIds.Contains(v.VerificationId));
-
             var errors = new List<string>();
             var attendanceLogs = new List<AttendanceLog>();
-            
-            var foundVerificationIds = verifications.Select(v => v.VerificationId).ToHashSet();
-            foreach (var vId in uniqueVerificationIds)
-            {
-                if (!foundVerificationIds.Contains(vId))
-                {
-                    errors.Add($"Verification with ID '{vId}' not found");
-                }
-            }
-
-            var usersToVerify = new List<string>();
-            var validVerifications = new List<VerificationSession>();
-
-            foreach (var verification in verifications)
-            {
-                if (verification.SessionId != attendDTO.SessionId)
-                {
-                    errors.Add($"Verification '{verification.VerificationId}' does not belong to the specified session");
-                    continue;
-                }
-                
-                if (verification.IsSuccessed == false)
-                {
-                    errors.Add($"Verification '{verification.VerificationId}' was not successful");
-                    continue;
-                }
-                usersToVerify.Add(verification.UserId);
-                validVerifications.Add(verification);
-            }
-            
-            if (!usersToVerify.Any())
-            {
-                 if (errors.Any()) return ApiResponse.FailureResponse("Failed to save attendance", errors);
-                 return ApiResponse.FailureResponse("No valid verifications found", new List<string> { "No valid verifications to process" });
-            }
-
+            var uniqueUserIds = attendDTO.AttendanceLogs.Select(a => a.UserId).Distinct().ToList();
             var orgUsers = await _unitOfWork.OrganizationUsers.FindAllAsync(
-                ou => ou.OrganizationId == session.OrganizationId && usersToVerify.Contains(ou.UserId));
+                ou => ou.OrganizationId == session.OrganizationId && uniqueUserIds.Contains(ou.UserId));
             
             var validOrgUserIds = orgUsers.Select(ou => ou.UserId).ToHashSet();
             var existingLogs = await _unitOfWork.AttendanceLogs.FindAllAsync(
-                log => log.SessionId == attendDTO.SessionId && usersToVerify.Contains(log.UserId));
+                log => log.SessionId == attendDTO.SessionId && uniqueUserIds.Contains(log.UserId));
             
             var existingLogUserIds = existingLogs.Select(l => l.UserId).ToHashSet();
-            foreach (var verification in validVerifications)
-            {
-                var userId = verification.UserId;
 
-                if (!validOrgUserIds.Contains(userId))
+            foreach (var logItem in attendDTO.AttendanceLogs)
+            {
+                if (!validOrgUserIds.Contains(logItem.UserId))
                 {
-                    errors.Add($"User associated with verification '{verification.VerificationId}' is not a member of the organization");
+                    errors.Add($"User '{logItem.UserId}' is not a member of the organization");
                     continue;
                 }
 
-                if (existingLogUserIds.Contains(userId))
+                if (existingLogUserIds.Contains(logItem.UserId))
                 {
-                    errors.Add($"Attendance already recorded for user associated with verification '{verification.VerificationId}'");
+                    errors.Add($"Attendance already recorded for user '{logItem.UserId}'");
+                    continue;
+                }
+
+                if (attendanceLogs.Any(x => x.UserId == logItem.UserId))
+                {
                     continue;
                 }
 
                 var attendanceLog = new AttendanceLog
                 {
                     SessionId = attendDTO.SessionId,
-                    UserId = userId,
-                    TimeStamp = DateTime.UtcNow,
-                    Result = AttendanceResult.Present,
-                    VerificationId = verification.VerificationId,
-                    ProofSignature = verification.ProofSignature
+                    UserId = logItem.UserId,
+                    TimeStamp = logItem.TimeStamp,
+                    Result = logItem.Result,
+                    ProofSignature = logItem.ProofSignature
                 };
 
                 attendanceLogs.Add(attendanceLog);
@@ -238,7 +202,7 @@ namespace Project_X.Services
 
             if (!attendanceLogs.Any())
             {
-                return ApiResponse.FailureResponse("No valid attendance records to save", new List<string> { "All verifications failed validation" });
+                return ApiResponse.FailureResponse("No valid attendance records to save", new List<string> { "All entries failed validation" });
             }
 
             try
