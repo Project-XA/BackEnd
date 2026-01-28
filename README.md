@@ -560,7 +560,22 @@ Creates a new attendance session.
     {
       "success": true,
       "message": "Session Created Successfully",
-      "data": null,
+      "data": {
+        "sessionId": 1,
+        "organizationId": 1,
+        "createdBy": "userid-guid",
+        "sessionName": "Morning Session",
+        "createdAt": "2023-10-27T09:00:00Z",
+        "connectionType": "WIFI",
+        "longitude": 0,
+        "latitude": 0,
+        "allowedRadius": 50,
+        "networkSSID": "WifiName",
+        "networkBSSID": "MacAddress",
+        "startAt": "2023-10-27T10:00:00Z",
+        "endAt": "2023-10-27T12:00:00Z",
+        "hallId": 1
+      },
       "errors": []
     }
     ```

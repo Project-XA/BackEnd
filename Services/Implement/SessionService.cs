@@ -54,7 +54,8 @@ namespace Project_X.Services
                 return ApiResponse.FailureResponse("Unsuccessful Save change", new List<string> { "Unexpected Error Happened while saving Changes" });
             }
 
-            return ApiResponse.SuccessResponse("Session Created Successfully");
+            var sessionResponse = _mapper.Map<SessionResponseDTO>(newSession);
+            return ApiResponse.SuccessResponse("Session Created Successfully", sessionResponse);
         }
         public async Task<ApiResponse> GetSessionByIdAsync(int sessionId)
         {
