@@ -57,7 +57,8 @@ namespace Project_X.Controllers
                 return BadRequest(responseFail);
             }
 
-            var result = await _organizationService.AddMemberAsync(addMemberDTO);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var result = await _organizationService.AddMemberAsync(addMemberDTO, userId!);
 
             if (result.Success)
             {
@@ -69,7 +70,8 @@ namespace Project_X.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetOrganizationById(int id)
         {
-            var result = await _organizationService.GetOrganizationByIdAsync(id);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var result = await _organizationService.GetOrganizationByIdAsync(id, userId!);
             if (result.Success)
             {
                 return Ok(result);
@@ -89,7 +91,8 @@ namespace Project_X.Controllers
                 return BadRequest(responseFail);
             }
 
-            var result = await _organizationService.UpdateOrganizationAsync(id, updateOrganizationDTO);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var result = await _organizationService.UpdateOrganizationAsync(id, updateOrganizationDTO, userId!);
             if (result.Success)
             {
                 return Ok(result);
@@ -101,7 +104,8 @@ namespace Project_X.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteOrganization(int id)
         {
-            var result = await _organizationService.DeleteOrganizationAsync(id);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var result = await _organizationService.DeleteOrganizationAsync(id, userId!);
             if (result.Success)
             {
                 return Ok(result);
@@ -125,7 +129,8 @@ namespace Project_X.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetOrganizationUsers(int id)
         {
-            var result = await _organizationService.GetOrganizationUsersAsync(id);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var result = await _organizationService.GetOrganizationUsersAsync(id, userId!);
             if (result.Success)
             {
                 return Ok(result);

@@ -6,11 +6,11 @@ namespace Project_X.Services
     public interface IOrganizationService
     {
         Task<ApiResponse> CreateOrganizationAsync(CreateOrganizationDTO createOrganizationDTO, string userId);
-        Task<ApiResponse> AddMemberAsync(AddMemberDTO addMemberDTO);
-        Task<ApiResponse> GetOrganizationByIdAsync(int organizationId);
-        Task<ApiResponse> UpdateOrganizationAsync(int organizationId, UpdateOrganizationDTO updateOrganizationDTO);
-        Task<ApiResponse> DeleteOrganizationAsync(int organizationId);
+        Task<ApiResponse> AddMemberAsync(AddMemberDTO addMemberDTO, string userId);
+        Task<ApiResponse> GetOrganizationByIdAsync(int organizationId, string userId);
+        Task<ApiResponse> UpdateOrganizationAsync(int organizationId, UpdateOrganizationDTO updateOrganizationDTO, string userId);
+        Task<ApiResponse> DeleteOrganizationAsync(int organizationId, string userId);
         Task<ApiResponse> GetUserOrganizationsAsync(string userId);
-        Task<ApiResponse> GetOrganizationUsersAsync(int organizationId);
+        Task<ApiResponse> GetOrganizationUsersAsync(int organizationId, string userId);
     }
 }

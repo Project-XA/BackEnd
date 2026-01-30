@@ -69,8 +69,7 @@ namespace Project_X.Controllers
             return BadRequest(result);
         }
 
-        [HttpPost("verify-rest-password-otp")]
-        [EnableRateLimiting("OtpPolicy")]
+        [HttpPost("verify-reset-password-otp")]
         public async Task<IActionResult> VerifyRestPasswordOTP(VerifyOtpResetPasswordDto verifDto)
         {
              if (!ModelState.IsValid)

@@ -26,6 +26,7 @@ namespace Project_X.Services
             _mapper = mapper;
         }
 
+
         public async Task<ApiResponse> CreateOrganizationAsync(CreateOrganizationDTO createOrganizationDTO, string userId)
         {
             if (userId != null)
@@ -91,8 +92,13 @@ namespace Project_X.Services
             return ApiResponse.FailureResponse("Unauthorized");
         }
 
-        public async Task<ApiResponse> AddMemberAsync(AddMemberDTO addMemberDTO)
+        public async Task<ApiResponse> AddMemberAsync(AddMemberDTO addMemberDTO, string userId)
         {
+            var isMember = await _unitOfWork.Organizations.ValidateUser(addMemberDTO.OrganizationId, userId);
+            if (!isMember)
+            {
+                return ApiResponse.FailureResponse("Unauthorized access to organization.");
+            }
             var existingUser = await _userManager.FindByEmailAsync(addMemberDTO.Email);
             if (existingUser != null)
             {
@@ -137,8 +143,14 @@ namespace Project_X.Services
             return ApiResponse.SuccessResponse("Member added successfully",
                 new { newUser.Id, newUser.Email, organization.OrganizationId });
         }
-        public async Task<ApiResponse> GetOrganizationByIdAsync(int organizationId)
+        public async Task<ApiResponse> GetOrganizationByIdAsync(int organizationId, string userId)
         {
+            var isMember = await _unitOfWork.Organizations.ValidateUser(organizationId, userId);
+            if (!isMember)
+            {
+                return ApiResponse.FailureResponse("Unauthorized access to organization.");
+            }
+            
             var organization = await _unitOfWork.Organizations.GetByIdAsync(organizationId);
             if (organization == null)
             {
@@ -147,9 +159,15 @@ namespace Project_X.Services
             var organizationResponse = _mapper.Map<OrganizationResponseDTO>(organization);
             return ApiResponse.SuccessResponse("Organization retrieved successfully", organizationResponse);
         }
-
-        public async Task<ApiResponse> UpdateOrganizationAsync(int organizationId, UpdateOrganizationDTO updateOrganizationDTO)
+    
+        public async Task<ApiResponse> UpdateOrganizationAsync(int organizationId, UpdateOrganizationDTO updateOrganizationDTO, string userId)
         {
+            var isMember = await _unitOfWork.Organizations.ValidateUser(organizationId, userId);
+            if (!isMember)
+            {
+                return ApiResponse.FailureResponse("Unauthorized access to organization.");
+            }
+            
             var organization = await _unitOfWork.Organizations.GetByIdAsync(organizationId);
             if (organization == null)
             {
@@ -164,9 +182,14 @@ namespace Project_X.Services
             var organizationResponse = _mapper.Map<OrganizationResponseDTO>(organization);
             return ApiResponse.SuccessResponse("Organization updated successfully", organizationResponse);
         }
-
-        public async Task<ApiResponse> DeleteOrganizationAsync(int organizationId)
+        public async Task<ApiResponse> DeleteOrganizationAsync(int organizationId, string userId)
         {
+            var isMember = await _unitOfWork.Organizations.ValidateUser(organizationId, userId);
+            if (!isMember)
+            {
+                return ApiResponse.FailureResponse("Unauthorized access to organization.");
+            }
+            
             var organization = await _unitOfWork.Organizations.GetByIdAsync(organizationId);
             if (organization == null)
             {
@@ -197,8 +220,13 @@ namespace Project_X.Services
             return ApiResponse.FailureResponse("User not found.", new List<string> { "Invalid User ID" });
         }
 
-        public async Task<ApiResponse> GetOrganizationUsersAsync(int organizationId)
+        public async Task<ApiResponse> GetOrganizationUsersAsync(int organizationId, string userId)
         {
+            var isMember = await _unitOfWork.Organizations.ValidateUser(organizationId, userId);
+            if (!isMember)
+            {
+                return ApiResponse.FailureResponse("Unauthorized access to organization.");
+            }
             var organization = await _unitOfWork.Organizations.GetByIdAsync(organizationId);
             if (organization == null)
             {
