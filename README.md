@@ -134,7 +134,7 @@ Initiates the password reset process by sending an OTP to the user's email.
 ### Verify Reset Password OTP
 Verifies the OTP and resets the user's password.
 
-- **URL**: `/verify-rest-password-otp`
+- **URL**: `/verify-reset-password-otp`
 - **Method**: `POST`
 - **Auth**: None
 - **Rate Limit**: `OtpPolicy`
@@ -165,6 +165,8 @@ Base Path: `/api/Organization`
 
 ### Create Organization
 Creates a new organization. Only Admins can create organizations.
+
+> **Note**: Users can only access and manage organizations they are members of.
 
 - **URL**: `/create-organization`
 - **Method**: `POST`
@@ -285,6 +287,7 @@ Adds an existing user to an organization.
     "email": "newmember@example.com", // Required, Valid Email
     "fullName": "New Member",     // Required
     "userName": "newmember",      // Required
+    "phoneNumber": "1234567890",  // Required
     "password": "Password123!",   // Required
     "confirmPassword": "Password123!", // Required
     "role": "User"                     // Required (Values: "Admin", "User")
