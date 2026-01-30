@@ -16,6 +16,8 @@ namespace Project_X.Models.DTOs
         [Required(ErrorMessage = "UserName is required")]
         [RegularExpression(@"^[a-zA-Z0-9_]+$", ErrorMessage = "UserName can only contain letters, numbers, and underscores")]
         public string UserName { get; set; }
+        [DataType(DataType.PhoneNumber)]
+        public string PhoneNumber { get; set; }
         [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }
