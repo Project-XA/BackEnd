@@ -40,7 +40,7 @@ namespace Project_X.Services
             var user = await _userManager.FindByEmailAsync(registerDTO.Email);
             if (user != null)
             {
-                return ApiResponse.FailureResponse("Email is already registered");
+                return ApiResponse.FailureResponse("Registration Failed", new List<string> { "Email is already registered" });
             }
 
             var newUser = _mapper.Map<AppUser>(registerDTO);
@@ -104,7 +104,7 @@ namespace Project_X.Services
                 
                 if (isSuccess == 0)
                 {
-                    return ApiResponse.FailureResponse("Unexpected Error");
+                    return ApiResponse.FailureResponse("Unexpected Error", new List<string> { "Failed to save OTP" });
                 }
 
                 var subject = "Password Reset OTP";

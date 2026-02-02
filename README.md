@@ -81,6 +81,14 @@ Creates a new user account.
     }
     ```
   - `400 Bad Request`: Validation errors or email already exists.
+    ```json
+    {
+      "success": false,
+      "message": "Registration Failed",
+      "data": null,
+      "errors": ["Email is already registered"]
+    }
+    ```
 
 ### Login
 Authenticates a user and returns a JWT token.
@@ -106,6 +114,14 @@ Authenticates a user and returns a JWT token.
     }
     ```
   - `400 Bad Request`: Invalid credentials.
+    ```json
+    {
+      "success": false,
+      "message": "Invalid Email or Password",
+      "data": null,
+      "errors": ["Invalid Email or Password"]
+    }
+    ```
 
 ### Forgot Password
 Initiates the password reset process by sending an OTP to the user's email.
@@ -157,6 +173,14 @@ Verifies the OTP and resets the user's password.
     }
     ```
   - `400 Bad Request`: Invalid OTP or User not found.
+    ```json
+    {
+      "success": false,
+      "message": "Invalid OTP",
+      "data": null,
+      "errors": ["Invalid or expired OTP"]
+    }
+    ```
 
 ---
 
@@ -304,7 +328,23 @@ Adds an existing user to an organization.
     }
     ```
   - `400 Bad Request`: User already exists or validation failed.
+    ```json
+    {
+      "success": false,
+      "message": "User creation failed.",
+      "data": null,
+      "errors": ["User with this email already exists."]
+    }
+    ```
   - `404 Not Found`: Organization not found.
+    ```json
+    {
+      "success": false,
+      "message": "Organization not found.",
+      "data": null,
+      "errors": ["Invalid Organization Id"]
+    }
+    ```
 
 ### Get User Organizations
 Retrieves all organizations associated with the authenticated user.

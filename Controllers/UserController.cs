@@ -51,7 +51,7 @@ namespace Project_X.Controllers
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userId))
             {
-                return Unauthorized(ApiResponse.FailureResponse("Unauthorized"));
+                return Unauthorized(ApiResponse.FailureResponse("Unauthorized", new List<string> { "User ID claim not found in token" }));
             }
 
             var result = await _userService.GetUserStatisticsAsync(userId);

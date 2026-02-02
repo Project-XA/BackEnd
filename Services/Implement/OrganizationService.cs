@@ -58,7 +58,7 @@ namespace Project_X.Services
 
                         if (!isUnique)
                         {
-                            return ApiResponse.FailureResponse("Failed to generate unique organization code. Please try again.");
+                            return ApiResponse.FailureResponse("Failed to generate unique organization code. Please try again.", new List<string> { "Unique code generation failed after max retries" });
                         }
 
                         organization.OrganizationCode = code;
@@ -83,13 +83,13 @@ namespace Project_X.Services
                         }
                         catch (Exception ex)
                         {
-                            return ApiResponse.FailureResponse($"An error occurred: {ex.Message}");
+                            return ApiResponse.FailureResponse("An error occurred while creating organization.", new List<string> { ex.Message });
                         }
                     }
 
                 }
             }
-            return ApiResponse.FailureResponse("Unauthorized");
+            return ApiResponse.FailureResponse("Unauthorized", new List<string> { "User is not authorized." });
         }
 
         public async Task<ApiResponse> AddMemberAsync(AddMemberDTO addMemberDTO, string userId)
@@ -97,12 +97,12 @@ namespace Project_X.Services
             var isMember = await _unitOfWork.Organizations.ValidateUser(addMemberDTO.OrganizationId, userId);
             if (!isMember)
             {
-                return ApiResponse.FailureResponse("Unauthorized access to organization.");
+                return ApiResponse.FailureResponse("Unauthorized access to organization.", new List<string> { "User is not a member of the organization." });
             }
             var existingUser = await _userManager.FindByEmailAsync(addMemberDTO.Email);
             if (existingUser != null)
             {
-                return ApiResponse.FailureResponse("User with this email already exists.");
+                return ApiResponse.FailureResponse("User creation failed.", new List<string> { "User with this email already exists." });
             }
 
             var organization = await _unitOfWork.Organizations.GetByIdAsync(addMemberDTO.OrganizationId);
@@ -148,7 +148,7 @@ namespace Project_X.Services
             var isMember = await _unitOfWork.Organizations.ValidateUser(organizationId, userId);
             if (!isMember)
             {
-                return ApiResponse.FailureResponse("Unauthorized access to organization.");
+                return ApiResponse.FailureResponse("Unauthorized access to organization.", new List<string> { "User is not a member of the organization." });
             }
             
             var organization = await _unitOfWork.Organizations.GetByIdAsync(organizationId);
@@ -165,7 +165,7 @@ namespace Project_X.Services
             var isMember = await _unitOfWork.Organizations.ValidateUser(organizationId, userId);
             if (!isMember)
             {
-                return ApiResponse.FailureResponse("Unauthorized access to organization.");
+                return ApiResponse.FailureResponse("Unauthorized access to organization.", new List<string> { "User is not a member of the organization." });
             }
             
             var organization = await _unitOfWork.Organizations.GetByIdAsync(organizationId);
@@ -187,7 +187,7 @@ namespace Project_X.Services
             var isMember = await _unitOfWork.Organizations.ValidateUser(organizationId, userId);
             if (!isMember)
             {
-                return ApiResponse.FailureResponse("Unauthorized access to organization.");
+                return ApiResponse.FailureResponse("Unauthorized access to organization.", new List<string> { "User is not a member of the organization." });
             }
             
             var organization = await _unitOfWork.Organizations.GetByIdAsync(organizationId);
@@ -225,7 +225,7 @@ namespace Project_X.Services
             var isMember = await _unitOfWork.Organizations.ValidateUser(organizationId, userId);
             if (!isMember)
             {
-                return ApiResponse.FailureResponse("Unauthorized access to organization.");
+                return ApiResponse.FailureResponse("Unauthorized access to organization.", new List<string> { "User is not a member of the organization." });
             }
             var organization = await _unitOfWork.Organizations.GetByIdAsync(organizationId);
             if (organization == null)
