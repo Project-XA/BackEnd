@@ -51,8 +51,8 @@ Most endpoints require authentication via JWT Bearer Token.
 ## 1. Account APIs
 Base Path: `/api/Account`
 
-### Register User
-Creates a new user account.
+### Register SuperAdmin
+Creates a new SuperAdmin account.
 
 - **URL**: `/Register`
 - **Method**: `POST`
@@ -67,7 +67,7 @@ Creates a new user account.
     "phoneNumber": "1234567890",  // Required
     "password": "Password123!",   // Required
     "confirmPassword": "Password123!", // Must match password
-    "role": "Admin"               // Required (Values: "Admin", "User")
+    "confirmPassword": "Password123!" // Must match password
   }
   ```
 - **Response**:
@@ -91,7 +91,7 @@ Creates a new user account.
     ```
 
 ### Login
-Authenticates a user and returns a JWT token.
+Authenticates a user and returns a JWT token. Only `Admin` and `SuperAdmin` users can login.
 
 - **URL**: `/Login`
 - **Method**: `POST`
@@ -113,13 +113,13 @@ Authenticates a user and returns a JWT token.
       "errors": []
     }
     ```
-  - `400 Bad Request`: Invalid credentials.
+  - `400 Bad Request`: Invalid credentials or Unauthorized role.
     ```json
     {
       "success": false,
-      "message": "Invalid Email or Password",
+      "message": "Unauthorized",
       "data": null,
-      "errors": ["Invalid Email or Password"]
+      "errors": ["Access restricted."]
     }
     ```
 
@@ -314,7 +314,7 @@ Adds an existing user to an organization.
     "phoneNumber": "1234567890",  // Required
     "password": "Password123!",   // Required
     "confirmPassword": "Password123!", // Required
-    "role": "User"                     // Required (Values: "Admin", "User")
+    "role": "User"                     // Required (Values: "Admin", "User", "SuperAdmin")
   }
   ```
 - **Response**:
@@ -1003,6 +1003,7 @@ Downloads a CSV file containing the attendance records for a specific session.
 ### UserRole
 - `Admin`
 - `User`
+- `SuperAdmin`
 
 ### VerificationType
 - `Face`

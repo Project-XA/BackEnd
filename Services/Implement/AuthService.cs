@@ -5,6 +5,7 @@ using Models;
 using Project_X.Data.UnitOfWork;
 using Project_X.Models;
 using Project_X.Models.DTOs;
+using Project_X.Models.Enums;
 using Project_X.Models.Response;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -35,15 +36,15 @@ namespace Project_X.Services
             _emailService = emailService;
         }
 
-        public async Task<ApiResponse> RegisterAsync(UserRegisterDTO registerDTO)
+        public async Task<ApiResponse> RegisterAsync(AdminRegisterDTO registerDTO)
         {
             var user = await _userManager.FindByEmailAsync(registerDTO.Email);
             if (user != null)
             {
                 return ApiResponse.FailureResponse("Registration Failed", new List<string> { "Email is already registered" });
             }
-
             var newUser = _mapper.Map<AppUser>(registerDTO);
+            newUser.Role = UserRole.SuperAdmin;
             var result = await _userManager.CreateAsync(newUser, registerDTO.Password);
             
             if (!result.Succeeded) 
@@ -52,7 +53,7 @@ namespace Project_X.Services
                  return ApiResponse.FailureResponse("Registration Failed", errors);
             }
 
-            var roleResult = await _userManager.AddToRoleAsync(newUser, registerDTO.Role.ToString());
+            var roleResult = await _userManager.AddToRoleAsync(newUser, UserRole.SuperAdmin.ToString());
             
             if (!roleResult.Succeeded)
             {
@@ -79,8 +80,13 @@ namespace Project_X.Services
                 var result = await _userManager.CheckPasswordAsync(user, loginDTO.Password);
                 if (result)
                 {
-                    var loginToken = GenerateJwtToken(user);
-                    return ApiResponse.SuccessResponse("Login done Successfully", loginToken);
+                    var roles = await _userManager.GetRolesAsync(user);
+                    if (roles.Contains(UserRole.Admin.ToString()) || roles.Contains(UserRole.SuperAdmin.ToString()))
+                    {
+                        var loginToken = GenerateJwtToken(user);
+                        return ApiResponse.SuccessResponse("Login done Successfully", loginToken);
+                    }
+                    return ApiResponse.FailureResponse("Unauthorized", new List<string> { "Access restricted." });
                 }
             }
             return ApiResponse.FailureResponse("Invalid Email or Password", new List<string> { "Invalid Email or Password" });

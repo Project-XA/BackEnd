@@ -18,7 +18,7 @@ namespace Project_X.Controllers
         }
 
         [HttpPost("Register")]
-        public async Task<IActionResult> Register(UserRegisterDTO RegisterDTO)
+        public async Task<IActionResult> Register(AdminRegisterDTO RegisterDTO)
         {
             if (!ModelState.IsValid)
             {

@@ -15,6 +15,10 @@ namespace Project_X.Data
             {
                 await roleManager.CreateAsync(new IdentityRole("User"));
             }
+            if (!await roleManager.RoleExistsAsync("SuperAdmin"))
+            {
+                await roleManager.CreateAsync(new IdentityRole("SuperAdmin"));
+            }
         }
     }
 }
