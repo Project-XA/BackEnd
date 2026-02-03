@@ -8,7 +8,7 @@ namespace Project_X.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles ="Admin")]
+    [Authorize(Roles ="Admin,SuperAdmin")]
     public class HallController : ControllerBase
     {
         private readonly IHallService _hallService;

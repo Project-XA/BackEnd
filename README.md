@@ -772,39 +772,7 @@ Deletes a session by ID.
     }
     ```
 
-### Create Verification Session
-Records a verification attempt (e.g., face match, fingerprint) for a user in a session. This should be called *before* saving attendance.
 
-- **URL**: `/create-verification`
-- **Method**: `POST`
-- **Auth**: Required (Role: `Admin`)
-- **Request Body**:
-  ```json
-  {
-    "userId": "user-guid",           // Required
-    "sessionId": 1,                  // Required
-    "verificationType": "Face",      // Required (Values: "Face", "FingerPrint")
-    "matchScore": 95.5,
-    "isSuccessed": true,
-    "longitude": 12.3456,
-    "latitude": 78.9012,
-    "proofSignature": "base64encodedstring", // Optional byte array
-    "networkSSID": "WifiName"
-  }
-  ```
-- **Response**:
-  - `200 OK`:
-    ```json
-    {
-      "success": true,
-      "message": "Verification Session Created Successfully",
-      "data": {
-        "verificationId": 100
-      },
-      "errors": []
-    }
-    ```
-  - `400 Bad Request`: Validation errors.
 
 ### Save Attendance
 Records attendance for multiple users in a session.
@@ -876,15 +844,15 @@ Retrieves the list of attendees for a specific session.
           "userName": "johndoe",
           "fullName": "John Doe",
           "timeStamp": "2023-10-27T10:15:00Z",
-          "verificationType": "Face",
-          "matchScore": 98.5
+          "verificationType": null,
+          "matchScore": null
         },
         {
           "userId": "user-guid-2",
           "userName": "janesmith",
           "fullName": "Jane Smith",
           "timeStamp": "2023-10-27T10:20:00Z",
-          "verificationType": "FingerPrint",
+          "verificationType": null,
           "matchScore": null
         }
       ],

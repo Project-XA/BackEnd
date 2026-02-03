@@ -9,6 +9,7 @@ namespace Project_X.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin,SuperAdmin")]
     public class OrganizationController : ControllerBase
     {
         private readonly IOrganizationService _organizationService;
@@ -19,7 +20,6 @@ namespace Project_X.Controllers
         }
 
         [HttpPost("create-organization")]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateOrganization(CreateOrganizationDTO createOrganizationDTO)
         {
             if (!ModelState.IsValid)
@@ -46,7 +46,6 @@ namespace Project_X.Controllers
         }
 
         [HttpPost("add-member")]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddMember(AddMemberDTO addMemberDTO)
         {
             if (!ModelState.IsValid)
@@ -67,7 +66,6 @@ namespace Project_X.Controllers
             return BadRequest(result);
         }
         [HttpGet("{id}")]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetOrganizationById(int id)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -80,7 +78,6 @@ namespace Project_X.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateOrganization(int id, UpdateOrganizationDTO updateOrganizationDTO)
         {
             if (!ModelState.IsValid)
@@ -101,7 +98,6 @@ namespace Project_X.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteOrganization(int id)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -113,7 +109,6 @@ namespace Project_X.Controllers
             return BadRequest(result);
         }
         [HttpGet("user-orgs")]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetUserOrganizations()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -126,7 +121,6 @@ namespace Project_X.Controllers
         }
 
         [HttpGet("{id}/users")]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetOrganizationUsers(int id)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

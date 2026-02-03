@@ -17,7 +17,7 @@ namespace Project_X.Controllers
         }
 
         [HttpGet("session/{sessionId}/csv")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,SuperAdmin")]
         public async Task<IActionResult> GetSessionAttendanceCsv(int sessionId)
         {
             var csvBytes = await _reportService.GenerateSessionAttendanceCsvAsync(sessionId);

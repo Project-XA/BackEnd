@@ -237,7 +237,7 @@ namespace Project_X.Services
             }
             var logs = await _unitOfWork.AttendanceLogs.FindAllAsync(
                 l => l.SessionId == sessionId,
-                new[] { "User", "VerificationSession" }
+                new[] { "User" }
             );
 
             var attendanceRecords = _mapper.Map<List<AttendanceRecordDTO>>(logs);

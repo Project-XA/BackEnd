@@ -44,7 +44,7 @@ namespace Project_X.Controllers
             return BadRequest(result);
         }
         [HttpGet("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,SuperAdmin")]
         public async Task<IActionResult> GetSessionById(int id)
         {
             var result = await _sessionService.GetSessionByIdAsync(id);
@@ -56,7 +56,7 @@ namespace Project_X.Controllers
         }
 
         [HttpGet("hall/{hallId}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,SuperAdmin")]
         public async Task<IActionResult> GetSessionsByHallId(int hallId)
         {
             var result = await _sessionService.GetSessionsByHallIdAsync(hallId);
@@ -68,7 +68,7 @@ namespace Project_X.Controllers
         }
 
         [HttpGet("{sessionId}/attendance")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,SuperAdmin")]
         public async Task<IActionResult> GetSessionAttendance(int sessionId)
         {
             var result = await _sessionService.GetSessionAttendanceAsync(sessionId);
@@ -80,7 +80,7 @@ namespace Project_X.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,SuperAdmin")]
         public async Task<IActionResult> UpdateSession(int id, UpdateSessionDTO updateSessionDTO)
         {
             if (!ModelState.IsValid)
@@ -100,7 +100,7 @@ namespace Project_X.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,SuperAdmin")]
         public async Task<IActionResult> DeleteSession(int id)
         {
             var result = await _sessionService.DeleteSessionAsync(id);
@@ -110,29 +110,9 @@ namespace Project_X.Controllers
             }
             return BadRequest(result);
         }
-
-        [HttpPost("create-verification")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> CreateVerificationSession(CreateVerificationSessionDTO verificationDTO)
-        {
-            if (!ModelState.IsValid)
-            {
-                var errors = ModelState.Values
-                    .SelectMany(v => v.Errors).Select(e => e.ErrorMessage)
-                    .ToList();
-                return BadRequest(ApiResponse.FailureResponse("Invalid Data", errors));
-            }
-
-            var result = await _sessionService.CreateVerificationSessionAsync(verificationDTO);
-            if (result.Success)
-            {
-                return Ok(result);
-            }
-            return BadRequest(result);
-        }
-
+        
         [HttpPost("save-attend")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,SuperAdmin")]
         public async Task<IActionResult> SaveAttend(SaveAttendDTO saveAttendDTO)
         {
             if (!ModelState.IsValid)
