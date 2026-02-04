@@ -8,8 +8,8 @@ namespace Project_X.Data.UnitOfWork
     {
         public IRepository<AppUser> Users { get; }
         public IOrganizationRepository Organizations { get; }
-        public IRepository<OrganizationUser> OrganizationUsers { get; }
-        public IRepository<AttendanceLog> AttendanceLogs { get; }
+        public IOrganizationUserRepository OrganizationUsers { get; }
+        public IAttendanceLogRepository AttendanceLogs { get; }
         public IAttendanceSessionRepository AttendanceSessions { get; }
         public IRepository<LocationBeacon> Beacons { get; }
         public IRepository<VerificationSession> VerificationSessions { get; }

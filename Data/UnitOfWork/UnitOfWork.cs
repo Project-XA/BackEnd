@@ -3,8 +3,6 @@ using Project_X.Data.Context;
 using Project_X.Data.Repositories;
 using Project_X.Data.Repository;
 using Project_X.Models;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
 
 namespace Project_X.Data.UnitOfWork
 {
@@ -13,8 +11,8 @@ namespace Project_X.Data.UnitOfWork
         private readonly AppDbConext _context;
         public IRepository<AppUser> Users { get; }
         public IOrganizationRepository Organizations  {get;}
-        public IRepository<OrganizationUser> OrganizationUsers { get; }
-        public IRepository<AttendanceLog> AttendanceLogs { get; }
+        public IOrganizationUserRepository OrganizationUsers { get; }
+        public IAttendanceLogRepository AttendanceLogs { get; }
         public IAttendanceSessionRepository AttendanceSessions { get; }
         public IRepository<LocationBeacon> Beacons { get; }
         public IRepository<VerificationSession> VerificationSessions { get; }
@@ -26,8 +24,8 @@ namespace Project_X.Data.UnitOfWork
             _context = context;
             Users = new Repository<AppUser>(_context);
             Organizations = new OrganizationRepository(_context);
-            OrganizationUsers = new Repository<OrganizationUser>(_context);
-            AttendanceLogs = new Repository<AttendanceLog>(_context);
+            OrganizationUsers = new OrganizationUserRepository(_context);
+            AttendanceLogs = new AttendanceLogRepository(_context);
             AttendanceSessions = new AttendanceSessionRepository(_context);
             Beacons = new Repository<LocationBeacon>(_context);
             VerificationSessions = new Repository<VerificationSession>(_context);
@@ -46,3 +44,4 @@ namespace Project_X.Data.UnitOfWork
         }
     }
 }
+

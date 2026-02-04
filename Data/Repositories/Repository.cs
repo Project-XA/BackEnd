@@ -11,7 +11,6 @@ namespace Project_X.Data.Repository
     {
         protected readonly AppDbConext _context;
         private readonly DbSet<T> _dbSet;
-        private AppDbConext context;
 
         public Repository(AppDbConext context)
         {

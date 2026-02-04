@@ -9,7 +9,7 @@ namespace Project_X.Data.Repositories
     {
         public OrganizationRepository(AppDbConext conext)
             : base(conext){}
-        public async Task<bool> VerfiyOrganiztionCOde(int orgCode)
+        public async Task<bool> VerifyOrganizationCodeAsync(int orgCode)
         {
             return await _context.Organizations
                 .AnyAsync(o => o.OrganizationCode == orgCode);

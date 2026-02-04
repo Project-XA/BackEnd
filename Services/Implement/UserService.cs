@@ -46,7 +46,7 @@ namespace Project_X.Services
                         var userResponse = _mapper.Map<UserResponseDTO>(user);
                         userResponse.OrganizationId = organization.OrganizationId;
                         userResponse.OrganizationName = organization.OrganizationName;
-                        var loginToken = _authService.GenerateJwtToken(user);
+                        var loginToken = await _authService.GenerateJwtTokenAsync(user);
                         return ApiResponse.SuccessResponse("User is retrieved successfully", new { userResponse, loginToken });
                     }
                     else
@@ -101,8 +101,8 @@ namespace Project_X.Services
             {
                 return ApiResponse.SuccessResponse("User statistics retrieved successfully", new UserStatisticsDTO());
             }
-            var totalSessions = await _unitOfWork.AttendanceSessions.CountAsync(s => orgIds.Contains(s.OrganizationId));
-            var attendedSessions = await _unitOfWork.AttendanceLogs.CountAsync(l => l.UserId == userId);
+            var totalSessions = await _unitOfWork.AttendanceSessions.CountByOrganizationsAsync(orgIds);
+            var attendedSessions = await _unitOfWork.AttendanceLogs.CountByUserIdAsync(userId);
             var missedSessions = totalSessions - attendedSessions;
             if (missedSessions < 0) missedSessions = 0;
 

@@ -204,7 +204,7 @@ namespace Project_X.Services
 
         public async Task<ApiResponse> GetUserOrganizationsAsync(string userId)
         {
-            var user  = _userManager.FindByIdAsync(userId).Result;
+            var user = await _userManager.FindByIdAsync(userId);
             if (user != null)
             {
                 var organizations = await _unitOfWork.Organizations

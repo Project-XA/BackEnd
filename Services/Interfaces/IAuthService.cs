@@ -10,6 +10,6 @@ namespace Project_X.Services
         Task<ApiResponse> LoginAsync(LoginDTO loginDTO);
         Task<ApiResponse> ForgotPasswordAsync(ForgotPasswordDTO forgotPasswordDTO);
         Task<ApiResponse> VerifyResetPasswordOTPAsync(VerifyOtpResetPasswordDto verifyDto);
-        string GenerateJwtToken(AppUser user);
+        Task<string> GenerateJwtTokenAsync(AppUser user);
     }
 }

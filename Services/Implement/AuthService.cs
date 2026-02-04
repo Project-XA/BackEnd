@@ -83,7 +83,7 @@ namespace Project_X.Services
                     var roles = await _userManager.GetRolesAsync(user);
                     if (roles.Contains(UserRole.Admin.ToString()) || roles.Contains(UserRole.SuperAdmin.ToString()))
                     {
-                        var loginToken = GenerateJwtToken(user);
+                        var loginToken = await GenerateJwtTokenAsync(user);
                         return ApiResponse.SuccessResponse("Login done Successfully", loginToken);
                     }
                     return ApiResponse.FailureResponse("Unauthorized", new List<string> { "Access restricted." });
@@ -163,7 +163,7 @@ namespace Project_X.Services
 
             return ApiResponse.SuccessResponse("Password Reset Successfully");
         }
-        public string GenerateJwtToken(AppUser user)
+        public async Task<string> GenerateJwtTokenAsync(AppUser user)
         {
             var claims = new List<Claim>
             {
@@ -171,7 +171,7 @@ namespace Project_X.Services
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.NameIdentifier, user.Id)
             };
-            var roles = _userManager.GetRolesAsync(user).Result;
+            var roles = await _userManager.GetRolesAsync(user);
             foreach (var role in roles)
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));

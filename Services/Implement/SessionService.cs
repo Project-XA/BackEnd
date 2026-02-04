@@ -156,12 +156,12 @@ namespace Project_X.Services
             var errors = new List<string>();
             var attendanceLogs = new List<AttendanceLog>();
             var uniqueUserIds = attendDTO.AttendanceLogs.Select(a => a.UserId).Distinct().ToList();
-            var orgUsers = await _unitOfWork.OrganizationUsers.FindAllAsync(
-                ou => ou.OrganizationId == session.OrganizationId && uniqueUserIds.Contains(ou.UserId));
+            var orgUsers = await _unitOfWork.OrganizationUsers.GetByOrganizationAndUsersAsync(
+                session.OrganizationId, uniqueUserIds);
             
             var validOrgUserIds = orgUsers.Select(ou => ou.UserId).ToHashSet();
-            var existingLogs = await _unitOfWork.AttendanceLogs.FindAllAsync(
-                log => log.SessionId == attendDTO.SessionId && uniqueUserIds.Contains(log.UserId));
+            var existingLogs = await _unitOfWork.AttendanceLogs.GetLogsBySessionAndUsersAsync(
+                attendDTO.SessionId, uniqueUserIds);
             
             var existingLogUserIds = existingLogs.Select(l => l.UserId).ToHashSet();
 
@@ -208,10 +208,7 @@ namespace Project_X.Services
 
             try
             {
-                foreach (var log in attendanceLogs)
-                {
-                    await _unitOfWork.AttendanceLogs.AddAsync(log);
-                }
+                await _unitOfWork.AttendanceLogs.AddRangeAsync(attendanceLogs);
 
                 var saved = await _unitOfWork.SaveAsync();
                 
@@ -235,10 +232,7 @@ namespace Project_X.Services
             {
                 return ApiResponse.FailureResponse("Session not found", new List<string> { "Invalid Session ID" });
             }
-            var logs = await _unitOfWork.AttendanceLogs.FindAllAsync(
-                l => l.SessionId == sessionId,
-                new[] { "User" }
-            );
+            var logs = await _unitOfWork.AttendanceLogs.GetLogsWithDetailsAsync(sessionId);
 
             var attendanceRecords = _mapper.Map<List<AttendanceRecordDTO>>(logs);
             return ApiResponse.SuccessResponse("Attendance retrieved successfully", attendanceRecords);

@@ -23,10 +23,7 @@ namespace Project_X.Services
 
         public async Task<byte[]> GenerateSessionAttendanceCsvAsync(int sessionId)
         {
-            var logs = await _unitOfWork.AttendanceLogs.FindAllAsync(
-                l => l.SessionId == sessionId,
-                new[] { "User", "VerificationSession" }
-            );
+            var logs = await _unitOfWork.AttendanceLogs.GetLogsWithDetailsAsync(sessionId);
 
             var attendanceRecords = _mapper.Map<List<AttendanceRecordDTO>>(logs);
             using (var memoryStream = new MemoryStream())
