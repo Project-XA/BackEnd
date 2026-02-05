@@ -190,7 +190,7 @@ namespace Project_X.Services
                     UserId = logItem.UserId,
                     TimeStamp = logItem.TimeStamp,
                     Result = logItem.Result,
-                    ProofSignature = logItem.ProofSignature
+                    ProofSignature = "For test"
                 };
 
                 attendanceLogs.Add(attendanceLog);
