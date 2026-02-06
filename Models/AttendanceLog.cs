@@ -14,6 +14,6 @@ namespace Project_X.Models
         public VerificationSession VerificationSession { get; set; }
         public DateTime TimeStamp { get; set; }
         public AttendanceResult Result { get; set; }
-        public byte[] ProofSignature { get; set; }
+        public byte[]? ProofSignature { get; set; }
     }
 }

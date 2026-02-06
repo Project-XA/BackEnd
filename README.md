@@ -789,8 +789,6 @@ Records attendance for multiple users in a session.
         "userId": "user-guid-1",
         "timeStamp": "2023-10-27T10:00:00Z",
         "result": "Present",               // Values: "Present", "Absent", "Late", "Excused"
-        "proofSignature": "base64...",     // Optional
-        "verificationId": 0                // Optional
       }
     ]
   }

@@ -11,7 +11,6 @@ namespace Project_X.Models.DTOs
         public DateTime TimeStamp { get; set; }
         [Required]
         public AttendanceResult Result { get; set; }
-        public byte[] ProofSignature { get; set; }
         
     }
 }

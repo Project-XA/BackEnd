@@ -189,8 +189,7 @@ namespace Project_X.Services
                     SessionId = attendDTO.SessionId,
                     UserId = logItem.UserId,
                     TimeStamp = logItem.TimeStamp,
-                    Result = logItem.Result,
-                    ProofSignature = "For test"
+                    Result = logItem.Result
                 };
 
                 attendanceLogs.Add(attendanceLog);
