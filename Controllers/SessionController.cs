@@ -4,6 +4,7 @@ using Project_X.Models.DTOs;
 using Project_X.Models.Response;
 using Project_X.Services;
 using System.Security.Claims;
+using Models;
 
 namespace Project_X.Controllers
 {
@@ -68,9 +69,33 @@ namespace Project_X.Controllers
         }
 
         [HttpGet("{sessionId}/attendance")]
-        [Authorize(Roles = "Admin,SuperAdmin")]
-        public async Task<IActionResult> GetSessionAttendance(int sessionId)
+        public async Task<IActionResult> GetSessionAttendance(int sessionId, [FromServices] IOrganizationService organizationService)
         {
+            if (!Request.Headers.TryGetValue("X-Api-Key", out var apiKey))
+            {
+                return Unauthorized(ApiResponse.FailureResponse("API Key is required."));
+            }
+
+            var orgResult = await organizationService.GetOrganizationByApiKeyAsync(apiKey!);
+            if (!orgResult.Success)
+            {
+                return Unauthorized(ApiResponse.FailureResponse("Invalid API Key."));
+            }
+
+            var organization = (Organization)orgResult.Data;
+            var sessionResult = await _sessionService.GetSessionByIdAsync(sessionId);
+            
+            if (!sessionResult.Success)
+            {
+                 return NotFound(ApiResponse.FailureResponse("Session not found."));
+            }
+
+            var session = (SessionResponseDTO)sessionResult.Data;
+            if (session.OrganizationId != organization.OrganizationId)
+            {
+                 return Unauthorized(ApiResponse.FailureResponse("Access Denied: Session does not belong to this organization."));
+            }
+
             var result = await _sessionService.GetSessionAttendanceAsync(sessionId);
             if (result.Success)
             {

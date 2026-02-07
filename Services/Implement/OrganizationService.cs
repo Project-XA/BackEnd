@@ -238,5 +238,45 @@ namespace Project_X.Services
 
             return ApiResponse.SuccessResponse("Organization users retrieved successfully", userResponses);
         }
+        public async Task<ApiResponse> GenerateApiKeyAsync(int organizationId, string userId)
+        {
+            var isMember = await _unitOfWork.Organizations.ValidateUser(organizationId, userId);
+            if (!isMember)
+            {
+                return ApiResponse.FailureResponse("Unauthorized access to organization.", new List<string> { "User is not a member of the organization." });
+            }
+
+            var organization = await _unitOfWork.Organizations.GetByIdAsync(organizationId);
+            if (organization == null)
+            {
+                return ApiResponse.FailureResponse("Organization not found.", new List<string> { "Invalid Organization ID" });
+            }
+
+            string apiKey = $"{Guid.NewGuid().ToString("N")}{Path.GetRandomFileName().Replace(".", "")}";
+            
+            organization.ApiKey = apiKey;
+            _unitOfWork.Organizations.Update(organization);
+            await _unitOfWork.SaveAsync();
+
+            return ApiResponse.SuccessResponse("API Key generated successfully", new { ApiKey = apiKey });
+        }
+
+        public async Task<ApiResponse> GetOrganizationByApiKeyAsync(string apiKey)
+        {
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return ApiResponse.FailureResponse("API Key is required.");
+            }
+            var allOrgs = await _unitOfWork.Organizations.GetAllAsync(); 
+            
+            var organization = allOrgs.FirstOrDefault(o => o.ApiKey == apiKey);
+
+            if (organization == null)
+            {
+                return ApiResponse.FailureResponse("Invalid API Key.");
+            }
+
+            return ApiResponse.SuccessResponse("Organization retrieved successfully", organization);
+        }
     }
 }

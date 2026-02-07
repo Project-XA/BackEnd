@@ -131,5 +131,17 @@ namespace Project_X.Controllers
             }
             return NotFound(result);
         }
+
+        [HttpPost("{id}/generate-api-key")]
+        public async Task<IActionResult> GenerateApiKey(int id)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var result = await _organizationService.GenerateApiKeyAsync(id, userId!);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
     }
 }

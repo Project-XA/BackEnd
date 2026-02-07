@@ -12,6 +12,7 @@ namespace Models
         public string ConatactEmail { get; set; }
         public int OrganizationCode { get; set; }
         public DateTime CreatedAt { get; set; }
+        public string? ApiKey { get; set; }
         public List<AttendanceSession> Sessions { get; set; }
         public List<OrganizationUser> OrganizationUsers { get; set; }
         public List<Hall> Halls { get; set; }
