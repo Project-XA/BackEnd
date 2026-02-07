@@ -16,7 +16,9 @@ This document provides a detailed reference for the backend APIs available in Pr
   - [Delete Organization](#delete-organization)
   - [Add Member](#add-member)
   - [Get User Organizations](#get-user-organizations)
+  - [Get User Organizations](#get-user-organizations)
   - [Get Organization Users](#get-organization-users)
+  - [Generate API Key](#generate-api-key)
 - [3. Hall APIs](#3-hall-apis)
   - [Create Hall](#create-hall)
   - [Get All Halls](#get-all-halls)
@@ -429,6 +431,26 @@ Retrieves all users belonging to a specific organization.
     ```
   - `404 Not Found`: Organization not found.
 
+### Generate API Key
+Generates a new API Key for the organization. This key is required for accessing attendance data externally.
+
+- **URL**: `/{id}/generate-api-key`
+- **Method**: `POST`
+- **Auth**: Required (Role: `Admin`)
+- **Response**:
+  - `200 OK`:
+    ```json
+    {
+      "success": true,
+      "message": "API Key generated successfully",
+      "data": {
+        "apiKey": "ace2..."
+      },
+      "errors": []
+    }
+    ```
+  - `400 Bad Request`: Error occurred.
+
 ---
 
 ## 3. Hall APIs
@@ -829,7 +851,7 @@ Retrieves the list of attendees for a specific session.
 
 - **URL**: `/{sessionId}/attendance`
 - **Method**: `GET`
-- **Auth**: Required (Role: `Admin`)
+- **Auth**: **API Key Required** (Header: `X-Api-Key`). **JWT Token is NOT accepted.**
 - **Response**:
   - `200 OK`:
     ```json
@@ -957,10 +979,10 @@ Downloads a CSV file containing the attendance records for a specific session.
 
 - **URL**: `/session/{sessionId}/csv`
 - **Method**: `GET`
-- **Auth**: Required (Role: `Admin`)
+- **Auth**: **API Key Required** (Header: `X-Api-Key`). **JWT Token is NOT accepted.**
 - **Response**:
   - `200 OK`: Returns a CSV file download (Content-Type: `text/csv`).
-  - `401 Unauthorized`: User is not Admin.
+  - `401 Unauthorized`: Missing or Invalid API Key.
 
 ---
 
