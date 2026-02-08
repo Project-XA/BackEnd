@@ -168,8 +168,8 @@ namespace Project_X
             }
 
             app.UseHttpsRedirection();
-            // app.UseCors("MyPolicy");
-            app.UseCors("AllowSpecificOrigins");
+            app.UseCors("MyPolicy");
+            //app.UseCors("AllowSpecificOrigins");
             app.UseRateLimiter();
             app.UseAuthorization();
             app.MapControllers();
