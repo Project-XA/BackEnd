@@ -143,5 +143,22 @@ namespace Project_X.Controllers
             }
             return BadRequest(result);
         }
+
+        [HttpGet("{id}/events")]
+        public async Task<IActionResult> GetOrganizationEvents(int id)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var result = await _organizationService.GetOrganizationEventsAsync(id, userId!);
+            
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            if (result.Message == "Unauthorized")
+            {
+                return Unauthorized(result);
+            }
+            return BadRequest(result);
+        }
     }
 }

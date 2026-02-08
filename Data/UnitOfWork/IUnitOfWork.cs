@@ -15,6 +15,7 @@ namespace Project_X.Data.UnitOfWork
         public IRepository<VerificationSession> VerificationSessions { get; }
         public IHallRepository Halls { get; }
         public IOtpRepository OTPs { get; }
+        public IRepository<OrganizationEvent> OrganizationEvents { get; }
         Task<int> SaveAsync();
     }
 }

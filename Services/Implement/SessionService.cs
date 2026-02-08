@@ -14,12 +14,14 @@ namespace Project_X.Services
         private readonly UserManager<AppUser> _userManager;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IOrganizationEventService _eventService;
 
-        public SessionService(UserManager<AppUser> userManager, IUnitOfWork unitOfWork, IMapper mapper)
+        public SessionService(UserManager<AppUser> userManager, IUnitOfWork unitOfWork, IMapper mapper, IOrganizationEventService eventService)
         {
             _userManager = userManager;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _eventService = eventService;
         }
 
         public async Task<ApiResponse> CreateSessionAsync(CreateSessionDTO createSessionDTO, string userId)
@@ -53,6 +55,7 @@ namespace Project_X.Services
             {
                 return ApiResponse.FailureResponse("Unsuccessful Save change", new List<string> { "Unexpected Error Happened while saving Changes" });
             }
+            await _eventService.LogEventAsync(createSessionDTO.OrganizationId, userId, "Session Created", $"Session '{newSession.SessionName}' created.");
 
             var sessionResponse = _mapper.Map<SessionResponseDTO>(newSession);
             return ApiResponse.SuccessResponse("Session Created Successfully", sessionResponse);
@@ -215,6 +218,7 @@ namespace Project_X.Services
                 {
                     return ApiResponse.FailureResponse("Failed to save attendance", new List<string> { "Database save operation failed" });
                 }
+                await _eventService.LogEventAsync(session.OrganizationId, null, "Attendance Saved", $"Attendance saved for {attendanceLogs.Count} users in session '{session.SessionName}'.");
 
                 return ApiResponse.SuccessResponse($"Attendance saved successfully for {attendanceLogs.Count} user(s)", 
                     new { SavedCount = attendanceLogs.Count, SessionId = attendDTO.SessionId });

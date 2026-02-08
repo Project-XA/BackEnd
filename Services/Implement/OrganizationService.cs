@@ -16,14 +16,16 @@ namespace Project_X.Services
         private readonly UserManager<AppUser> _userManager;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IOrganizationEventService _eventService;
         private readonly Random _random = new Random();
 
         public OrganizationService(UserManager<AppUser> userManager,IUnitOfWork unitOfWork,
-            IMapper mapper)
+            IMapper mapper, IOrganizationEventService eventService)
         {
             _userManager = userManager;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _eventService = eventService;
         }
 
 
@@ -77,6 +79,7 @@ namespace Project_X.Services
 
                             await _unitOfWork.OrganizationUsers.AddAsync(organizationUser);
                             await _unitOfWork.SaveAsync();
+                            await _eventService.LogEventAsync(organization.OrganizationId, user.Id, "Organization Created", $"Organization '{organization.OrganizationName}' created.");
 
                             var organizationResponse = _mapper.Map<OrganizationResponseDTO>(organization);
                             return ApiResponse.SuccessResponse("Organization Created Successfully", organizationResponse);
@@ -132,6 +135,7 @@ namespace Project_X.Services
 
                 await _unitOfWork.OrganizationUsers.AddAsync(organizationUser);
                 await _unitOfWork.SaveAsync();
+                await _eventService.LogEventAsync(addMemberDTO.OrganizationId, userId, "Member Added", $"User '{newUser.Email}' added as {addMemberDTO.Role}.");
             }
             catch(Exception)
             {
@@ -257,6 +261,7 @@ namespace Project_X.Services
             organization.ApiKey = apiKey;
             _unitOfWork.Organizations.Update(organization);
             await _unitOfWork.SaveAsync();
+            await _eventService.LogEventAsync(organizationId, userId, "API Key Generated", "New API Key generated.");
 
             return ApiResponse.SuccessResponse("API Key generated successfully", new { ApiKey = apiKey });
         }
@@ -277,6 +282,28 @@ namespace Project_X.Services
             }
 
             return ApiResponse.SuccessResponse("Organization retrieved successfully", organization);
+        }
+
+        public async Task<ApiResponse> GetOrganizationEventsAsync(int organizationId, string userId, int count = 20)
+        {
+            var isMember = await _unitOfWork.Organizations.ValidateUser(organizationId, userId);
+            if (!isMember)
+            {
+                return ApiResponse.FailureResponse("Unauthorized access to organization.", new List<string> { "User is not a member of the organization." });
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return ApiResponse.FailureResponse("User not found.");
+            }
+            
+            if (user.Role != UserRole.Admin && user.Role != UserRole.SuperAdmin)
+            {
+                 return ApiResponse.FailureResponse("Unauthorized.", new List<string> { "Unauthorized access." });
+            }
+
+            return await _eventService.GetRecentEventsAsync(organizationId, count);
         }
     }
 }

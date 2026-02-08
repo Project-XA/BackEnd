@@ -14,5 +14,6 @@ namespace Project_X.Services
         Task<ApiResponse> GetOrganizationUsersAsync(int organizationId, string userId);
         Task<ApiResponse> GenerateApiKeyAsync(int organizationId, string userId);
         Task<ApiResponse> GetOrganizationByApiKeyAsync(string apiKey);
+        Task<ApiResponse> GetOrganizationEventsAsync(int organizationId, string userId, int count = 20);
     }
 }

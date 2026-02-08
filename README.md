@@ -35,12 +35,14 @@ This document provides a detailed reference for the backend APIs available in Pr
     - [Delete Session](#delete-session)
     - [Save Attendance](#save-attendance)
     - [Get Session Attendance](#get-session-attendance)
+    - [Get Session Attendance (Internal)](#get-session-attendance-internal)
   - [5. User APIs](#5-user-apis)
     - [Get User Statistics](#get-user-statistics)
     - [Get User Details](#get-user-details)
     - [Get User Role](#get-user-role)
   - [6. Report APIs](#6-report-apis)
     - [Get Session Attendance CSV](#get-session-attendance-csv)
+    - [Get Session Attendance CSV (Internal)](#get-session-attendance-csv-internal)
   - [7. Enums](#7-enums)
     - [UserRole](#userrole)
     - [VerificationType](#verificationtype)
@@ -457,6 +459,33 @@ Generates a new API Key for the organization. This key is required for accessing
     }
     ```
   - `400 Bad Request`: Error occurred.
+
+### Get Organization Events
+Retrieves recent activity logs for an organization.
+
+- **URL**: `/{id}/events`
+- **Method**: `GET`
+- **Auth**: Required (Role: `Admin`, `SuperAdmin`)
+- **Response**:
+  - `200 OK`:
+    ```json
+    {
+      "success": true,
+      "message": "Recent events retrieved successfully",
+      "data": [
+        {
+          "id": 1,
+          "organizationId": 1,
+          "userId": "user-guid",
+          "eventType": "Session Created",
+          "description": "Session 'Morning Session' created.",
+          "createdAt": "2023-10-27T10:00:00Z"
+        }
+      ],
+      "errors": []
+    }
+    ```
+  - `401 Unauthorized`: User is not a member or not an Admin.
 
 ---
 

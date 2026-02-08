@@ -18,6 +18,7 @@ namespace Project_X.Data.UnitOfWork
         public IRepository<VerificationSession> VerificationSessions { get; }
         public IHallRepository Halls { get; }
         public IOtpRepository OTPs { get; }
+        public IRepository<OrganizationEvent> OrganizationEvents { get; }
 
         public UnitOfWork(AppDbConext context)
         {
@@ -31,6 +32,7 @@ namespace Project_X.Data.UnitOfWork
             VerificationSessions = new Repository<VerificationSession>(_context);
             Halls = new HallRepository(_context);
             OTPs = new OtpRepository(_context);
+            OrganizationEvents = new Repository<OrganizationEvent>(_context);
         }
     
         public async Task<int> SaveAsync()

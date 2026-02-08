@@ -11,11 +11,13 @@ namespace Project_X.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IOrganizationEventService _eventService;
 
-        public HallService(IUnitOfWork unitOfWork, IMapper mapper)
+        public HallService(IUnitOfWork unitOfWork, IMapper mapper, IOrganizationEventService eventService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _eventService = eventService;
         }
 
         public async Task<ApiResponse> CreateHallAsync(HallDTO hallDTO)
@@ -36,6 +38,8 @@ namespace Project_X.Services
             await _unitOfWork.Halls.AddAsync(hallEntity);
             await _unitOfWork.SaveAsync();
     
+            await _eventService.LogEventAsync(hallDTO.OrganizationId, null, "Hall Created", $"Hall '{hallEntity.HallName}' created.");
+
             var hallResponse = _mapper.Map<HallResponseDTO>(hallEntity);
             return ApiResponse.SuccessResponse("Hall created successfully.", hallResponse);
         }
