@@ -5,16 +5,20 @@ using Project_X.Services;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
+using Project_X.Hubs;
 
 namespace Project_X.Services
 {
     public class OrganizationEventService : IOrganizationEventService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly Microsoft.AspNetCore.SignalR.IHubContext<OrganizationHub> _hubContext;
 
-        public OrganizationEventService(IUnitOfWork unitOfWork)
+        public OrganizationEventService(IUnitOfWork unitOfWork, Microsoft.AspNetCore.SignalR.IHubContext<OrganizationHub> hubContext)
         {
             _unitOfWork = unitOfWork;
+            _hubContext = hubContext;
         }
 
         public async Task LogEventAsync(int organizationId, string userId, string eventType, string description)
@@ -32,6 +36,15 @@ namespace Project_X.Services
 
                 await _unitOfWork.OrganizationEvents.AddAsync(orgEvent);
                 await _unitOfWork.SaveAsync();
+                await _hubContext.Clients.Group($"Org_{organizationId}").SendAsync("ReceiveEvent", new 
+                {
+                    Id = orgEvent.Id,
+                    OrganizationId = organizationId,
+                    UserId = userId,
+                    EventType = eventType,
+                    Description = description,
+                    CreatedAt = orgEvent.CreatedAt
+                });
             }
             catch (Exception ex)
             {

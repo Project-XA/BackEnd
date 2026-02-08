@@ -17,6 +17,7 @@ using Project_X.Models.Mapping;
 using Project_X.Services;
 using System.Text;
 using System.Threading.RateLimiting;
+using Project_X.Hubs;
 
 namespace Project_X
 {
@@ -136,6 +137,7 @@ namespace Project_X
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IReportService, ReportService>();
             builder.Services.AddScoped<IOrganizationEventService, OrganizationEventService>();
+            builder.Services.AddSignalR();
             var app = builder.Build();
             using(var scope = app.Services.CreateScope())
             {
@@ -155,6 +157,7 @@ namespace Project_X
             app.UseRateLimiter();
             app.UseAuthorization();
             app.MapControllers();
+            app.MapHub<OrganizationHub>("/organizationHub");
 
             app.Run();
         }
