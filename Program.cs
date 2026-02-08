@@ -127,6 +127,21 @@ namespace Project_X
                         .AllowAnyMethod();
                 });
             });
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigins",
+                    builder =>
+                    {
+                        builder.WithOrigins(
+                            "http://localhost:3000",               
+                            "https://frontend-black301s-projects.vercel.app"
+                        )
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials(); 
+                    });
+            });
+
 
             builder.Services.AddScoped<IEmailService, EmailService>();
             builder.Services.AddScoped<IOrganizationService, OrganizationService>();
@@ -146,14 +161,15 @@ namespace Project_X
             }
 
             // Configure the HTTP request pipeline.
-            //if (app.Environment.IsDevelopment())
-            //{
+            if (app.Environment.IsDevelopment())
+            {
                 app.UseSwagger();
                 app.UseSwaggerUI();
-            //}
+            }
 
             app.UseHttpsRedirection();
-            app.UseCors("MyPolicy");
+            // app.UseCors("MyPolicy");
+            app.UseCors("AllowSpecificOrigins");
             app.UseRateLimiter();
             app.UseAuthorization();
             app.MapControllers();
