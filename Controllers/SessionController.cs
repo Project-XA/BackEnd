@@ -104,6 +104,18 @@ namespace Project_X.Controllers
             return BadRequest(result);
         }
 
+        [HttpGet("{sessionId}/attendance/internal")]
+        [Authorize(Roles = "Admin,SuperAdmin")]
+        public async Task<IActionResult> GetSessionAttendanceInternal(int sessionId)
+        {
+            var result = await _sessionService.GetSessionAttendanceAsync(sessionId);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin,SuperAdmin")]
         public async Task<IActionResult> UpdateSession(int id, UpdateSessionDTO updateSessionDTO)

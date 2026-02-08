@@ -3,43 +3,50 @@
 This document provides a detailed reference for the backend APIs available in Project X.
 
 ## Table of Contents
-- [Authentication](#authentication)
-- [1. Account APIs](#1-account-apis)
-  - [Register User](#register-user)
-  - [Login](#login)
-  - [Forgot Password](#forgot-password)
-  - [Verify Reset Password OTP](#verify-reset-password-otp)
-- [2. Organization APIs](#2-organization-apis)
-  - [Create Organization](#create-organization)
-  - [Get Organization](#get-organization)
-  - [Update Organization](#update-organization)
-  - [Delete Organization](#delete-organization)
-  - [Add Member](#add-member)
-  - [Get User Organizations](#get-user-organizations)
-  - [Get User Organizations](#get-user-organizations)
-  - [Get Organization Users](#get-organization-users)
-  - [Generate API Key](#generate-api-key)
-- [3. Hall APIs](#3-hall-apis)
-  - [Create Hall](#create-hall)
-  - [Get All Halls](#get-all-halls)
-  - [Get Hall By ID](#get-hall-by-id)
-  - [Update Hall](#update-hall)
-  - [Delete Hall](#delete-hall)
-- [4. Session APIs](#4-session-apis)
-  - [Create Session](#create-session)
-  - [Get Session By ID](#get-session-by-id)
-  - [Get Sessions By Hall ID](#get-sessions-by-hall-id)
-  - [Update Session](#update-session)
-  - [Delete Session](#delete-session)
-  - [Create Verification Session](#create-verification-session)
-  - [Save Attendance](#save-attendance)
-  - [Get Session Attendance](#get-session-attendance)
-- [5. User APIs](#5-user-apis)
-  - [Get User Statistics](#get-user-statistics)
-  - [Get User Details](#get-user-details)
-  - [Get User Role](#get-user-role)
-- [6. Report APIs](#6-report-apis)
-  - [Get Session Attendance CSV](#get-session-attendance-csv)
+- [Project X API Documentation](#project-x-api-documentation)
+  - [Table of Contents](#table-of-contents)
+  - [Base URL](#base-url)
+  - [Authentication](#authentication)
+  - [1. Account APIs](#1-account-apis)
+    - [Register SuperAdmin](#register-superadmin)
+    - [Login](#login)
+    - [Forgot Password](#forgot-password)
+    - [Verify Reset Password OTP](#verify-reset-password-otp)
+  - [2. Organization APIs](#2-organization-apis)
+    - [Create Organization](#create-organization)
+    - [Get Organization](#get-organization)
+    - [Update Organization](#update-organization)
+    - [Delete Organization](#delete-organization)
+    - [Add Member](#add-member)
+    - [Get User Organizations](#get-user-organizations)
+    - [Get Organization Users](#get-organization-users)
+    - [Generate API Key](#generate-api-key)
+  - [3. Hall APIs](#3-hall-apis)
+    - [Create Hall](#create-hall)
+    - [Get All Halls](#get-all-halls)
+    - [Get Hall By ID](#get-hall-by-id)
+    - [Update Hall](#update-hall)
+    - [Delete Hall](#delete-hall)
+  - [4. Session APIs](#4-session-apis)
+    - [Create Session](#create-session)
+    - [Get Session By ID](#get-session-by-id)
+    - [Get Sessions By Hall ID](#get-sessions-by-hall-id)
+    - [Update Session](#update-session)
+    - [Delete Session](#delete-session)
+    - [Save Attendance](#save-attendance)
+    - [Get Session Attendance](#get-session-attendance)
+  - [5. User APIs](#5-user-apis)
+    - [Get User Statistics](#get-user-statistics)
+    - [Get User Details](#get-user-details)
+    - [Get User Role](#get-user-role)
+  - [6. Report APIs](#6-report-apis)
+    - [Get Session Attendance CSV](#get-session-attendance-csv)
+  - [7. Enums](#7-enums)
+    - [UserRole](#userrole)
+    - [VerificationType](#verificationtype)
+    - [ConnectionType](#connectiontype)
+    - [AttendanceResult](#attendanceresult)
+    - [Status](#status)
 
 ## Base URL
 `http://localhost:7180/api` (or your configured port)
@@ -852,6 +859,7 @@ Retrieves the list of attendees for a specific session.
 - **URL**: `/{sessionId}/attendance`
 - **Method**: `GET`
 - **Auth**: **API Key Required** (Header: `X-Api-Key`). **JWT Token is NOT accepted.**
+- **Note**: This endpoint is for external integrations. For internal use (Admin Panel), use the Internal endpoint.
 - **Response**:
   - `200 OK`:
     ```json
@@ -880,6 +888,14 @@ Retrieves the list of attendees for a specific session.
     }
     ```
   - `400 Bad Request`: Session not found.
+
+### Get Session Attendance (Internal)
+Retrieves the list of attendees for a specific session using JWT Authentication.
+
+- **URL**: `/{sessionId}/attendance/internal`
+- **Method**: `GET`
+- **Auth**: Required (Role: `Admin`, `SuperAdmin`)
+- **Response**: Same as [Get Session Attendance](#get-session-attendance)
 
 ## 5. User APIs
 Base Path: `/api/User`
@@ -980,9 +996,20 @@ Downloads a CSV file containing the attendance records for a specific session.
 - **URL**: `/session/{sessionId}/csv`
 - **Method**: `GET`
 - **Auth**: **API Key Required** (Header: `X-Api-Key`). **JWT Token is NOT accepted.**
+- **Note**: This endpoint is for external integrations. For internal use (Admin Panel), use the Internal endpoint.
 - **Response**:
   - `200 OK`: Returns a CSV file download (Content-Type: `text/csv`).
   - `401 Unauthorized`: Missing or Invalid API Key.
+
+### Get Session Attendance CSV (Internal)
+Downloads a CSV file containing the attendance records for a specific session using JWT Authentication.
+
+- **URL**: `/session/{sessionId}/csv/internal`
+- **Method**: `GET`
+- **Auth**: Required (Role: `Admin`, `SuperAdmin`)
+- **Response**:
+  - `200 OK`: Returns a CSV file download (Content-Type: `text/csv`).
+  - `401 Unauthorized`: User is not Admin.
 
 ---
 

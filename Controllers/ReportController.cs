@@ -51,5 +51,13 @@ namespace Project_X.Controllers
             var csvBytes = await _reportService.GenerateSessionAttendanceCsvAsync(sessionId);
             return File(csvBytes, "text/csv", $"Attendance_Session_{sessionId}.csv");
         }
+
+        [HttpGet("session/{sessionId}/csv/internal")]
+        [Authorize(Roles = "Admin,SuperAdmin")]
+        public async Task<IActionResult> GetSessionAttendanceCsvInternal(int sessionId)
+        {
+            var csvBytes = await _reportService.GenerateSessionAttendanceCsvAsync(sessionId);
+            return File(csvBytes, "text/csv", $"Attendance_Session_{sessionId}.csv");
+        }
     }
 }
