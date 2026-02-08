@@ -134,7 +134,7 @@ namespace Project_X
                     {
                         builder.WithOrigins(
                             "http://localhost:3000",               
-                            "https://frontend-black301s-projects.vercel.app"
+                            "https://frontend-seven-henna-fsja1ib7rz.vercel.app"
                         )
                         .AllowAnyHeader()
                         .AllowAnyMethod()
