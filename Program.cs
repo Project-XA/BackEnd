@@ -132,13 +132,10 @@ namespace Project_X
                 options.AddPolicy("AllowSpecificOrigins",
                     builder =>
                     {
-                        builder.WithOrigins(
-                            "http://localhost:3000",               
-                            "https://frontend-seven-henna-fsja1ib7rz.vercel.app"
-                        )
+                        builder.WithOrigins("https://attendo-wine.vercel.app")
                         .AllowAnyHeader()
                         .AllowAnyMethod()
-                        .AllowCredentials(); 
+                        .AllowCredentials();
                     });
             });
 
@@ -168,8 +165,8 @@ namespace Project_X
             }
 
             app.UseHttpsRedirection();
-            app.UseCors("MyPolicy");
-            //app.UseCors("AllowSpecificOrigins");
+            //app.UseCors("MyPolicy");
+            app.UseCors("AllowSpecificOrigins");
             app.UseRateLimiter();
             app.UseAuthorization();
             app.MapControllers();
