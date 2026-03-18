@@ -159,7 +159,7 @@ namespace Project_X
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
                 await IdentityRoleIntializer.SeedRoleAsync(roleManager);
             }
-
+            //Hello form section feature branch
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
