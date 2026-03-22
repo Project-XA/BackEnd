@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace Project_X.Models.DTOs
 {
@@ -8,6 +8,7 @@ namespace Project_X.Models.DTOs
         public string OrganizationName { get; set; }
         [Required(ErrorMessage = "Organization type is required")]
         public string OrganizationType { get; set; }
+        public bool IsUniversity { get; set; }
         [Required(ErrorMessage = "Conatct Email is required")]
         public string ConatactEmail { get; set; }
     }

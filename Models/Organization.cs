@@ -1,4 +1,4 @@
-﻿using Project_X.Models;
+using Project_X.Models;
 using System;
 using System.Collections.Generic;
 
@@ -9,6 +9,7 @@ namespace Models
         public int OrganizationId { get; set; }
         public string OrganizationName { get; set; }
         public string OrganizationType { get; set; }
+        public bool IsUniversity { get; set; }
         public string ConatactEmail { get; set; }
         public int OrganizationCode { get; set; }
         public DateTime CreatedAt { get; set; }

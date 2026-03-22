@@ -199,7 +199,7 @@ Verifies the OTP and resets the user's password.
 Base Path: `/api/Organization`
 
 ### Create Organization
-Creates a new organization. Only Admins can create organizations.
+Creates a new organization. Only Admins can create organizations. Set `isUniversity` to `true` when the organization represents a university; omit it or set it to `false` otherwise (stored as `false` by default).
 
 > **Note**: Users can only access and manage organizations they are members of.
 
@@ -211,6 +211,7 @@ Creates a new organization. Only Admins can create organizations.
   {
     "organizationName": "My Org",      // Required
     "organizationType": "Tech",        // Required
+    "isUniversity": false,             // Optional; defaults to false if omitted
     "conatactEmail": "contact@org.com" // Required
   }
   ```
@@ -224,6 +225,7 @@ Creates a new organization. Only Admins can create organizations.
         "organizationId": 1,
         "organizationName": "My Org",
         "organizationType": "Tech",
+        "isUniversity": false,
         "conatactEmail": "contact@org.com",
         "organizationCode": 1234,
         "createdAt": "2023-10-27T10:00:00Z"
@@ -249,6 +251,7 @@ Retrieves organization details by ID.
         "organizationId": 1,
         "organizationName": "My Org",
         "organizationType": "Tech",
+        "isUniversity": false,
         "conatactEmail": "contact@org.com",
         "organizationCode": 1234,
         "createdAt": "2023-10-27T10:00:00Z"
@@ -269,6 +272,7 @@ Updates an organization's details.
   {
     "organizationName": "Updated Org Name",      // Required
     "organizationType": "Updated Type",         // Required
+    "isUniversity": true,                        // Optional; defaults to false if omitted
     "conatactEmail": "updated@org.com"         // Required
   }
   ```
@@ -282,6 +286,7 @@ Updates an organization's details.
         "organizationId": 1,
         "organizationName": "Updated Org Name",
         "organizationType": "Updated Type",
+        "isUniversity": true,
         "conatactEmail": "updated@org.com",
         "organizationCode": 1234,
         "createdAt": "2023-10-27T10:00:00Z"
@@ -374,6 +379,7 @@ Retrieves all organizations associated with the authenticated user.
           "organizationId": 1,
           "organizationName": "My Org",
           "organizationType": "Tech",
+          "isUniversity": false,
           "conatactEmail": "contact@org.com",
           "organizationCode": 1234,
           "createdAt": "2023-10-27T10:00:00Z"
@@ -382,6 +388,7 @@ Retrieves all organizations associated with the authenticated user.
           "organizationId": 2,
           "organizationName": "Another Org",
           "organizationType": "Education",
+          "isUniversity": true,
           "conatactEmail": "info@org.com",
           "organizationCode": 5678,
           "createdAt": "2023-10-28T10:00:00Z"
