@@ -171,6 +171,7 @@ namespace Project_X
             app.UseCors("MyPolicy");
             //app.UseCors("AllowSpecificOrigins");
             app.UseRateLimiter();
+            app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
             app.MapHub<OrganizationHub>("/organizationHub");
