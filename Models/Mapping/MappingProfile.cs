@@ -58,3 +58,6 @@ namespace Project_X.Models.Mapping
             CreateMap<SectionUser, SectionMemberResponseDTO>()
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.User.FullName))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email));
+        }
+    }
+}
