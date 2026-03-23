@@ -36,10 +36,8 @@ namespace Project_X.Services
                 var user = await _userManager.FindByIdAsync(userId);
                 if (user != null)
                 {
-                    if (user.Role == UserRole.Admin)
+                    if (user.Role == UserRole.Admin || user.Role == UserRole.SuperAdmin)
                     {
-
-
                         var organization = _mapper.Map<Organization>(createOrganizationDTO);
                         organization.CreatedAt = DateTime.UtcNow;
                         int code;

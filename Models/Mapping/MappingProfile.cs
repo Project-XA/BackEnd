@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Models;
 using Project_X.Models.DTOs;
 using Project_X.Models.Enums;
@@ -11,6 +11,10 @@ namespace Project_X.Models.Mapping
         {
            CreateMap<UserRegisterDTO,AppUser>()
                 .ForMember(dest=>dest.CreatedAt,opt=>opt.MapFrom(src=>DateTime.UtcNow));
+
+            CreateMap<AdminRegisterDTO, AppUser>()
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
 
             CreateMap<AppUser, UserRegisterDTO>();
 
@@ -45,6 +49,15 @@ namespace Project_X.Models.Mapping
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.User.FullName))
                 .ForMember(dest => dest.VerificationType, opt => opt.MapFrom(src => src.VerificationSession != null ? src.VerificationSession.VerificationType : (VerificationType?)null))
                 .ForMember(dest => dest.MatchScore, opt => opt.MapFrom(src => src.VerificationSession != null ? src.VerificationSession.MatchScore : (double?)null));
+
+            CreateMap<CreateSectionDTO, Section>()
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
+            CreateMap<Section, SectionResponseDTO>()
+                .ForMember(dest => dest.MemberCount, opt => opt.MapFrom(src => src.SectionUsers != null ? src.SectionUsers.Count : 0));
+            CreateMap<SectionUser, SectionMemberResponseDTO>()
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.User.FullName))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email));
         }
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Project_X.Data.Context;
@@ -11,9 +12,11 @@ using Project_X.Data.Context;
 namespace Project_X.Migrations
 {
     [DbContext(typeof(AppDbConext))]
-    partial class AppDbConextModelSnapshot : ModelSnapshot
+    [Migration("20260322173847_AddIsUniversityToOrganization")]
+    partial class AddIsUniversityToOrganization
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -520,58 +523,6 @@ namespace Project_X.Migrations
                     b.ToTable("OrganizationUser");
                 });
 
-            modelBuilder.Entity("Project_X.Models.Section", b =>
-                {
-                    b.Property<int>("SectionId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SectionId"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("OrganizationId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("SectionCode")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("SectionName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("SectionId");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("SectionCode")
-                        .IsUnique();
-
-                    b.ToTable("Sections");
-                });
-
-            modelBuilder.Entity("Project_X.Models.SectionUser", b =>
-                {
-                    b.Property<int>("SectionId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("JoinedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("SectionId", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("SectionUsers");
-                });
-
             modelBuilder.Entity("Project_X.Models.VerificationSession", b =>
                 {
                     b.Property<int>("VerificationId")
@@ -785,36 +736,6 @@ namespace Project_X.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Project_X.Models.Section", b =>
-                {
-                    b.HasOne("Models.Organization", "Organization")
-                        .WithMany("Sections")
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Organization");
-                });
-
-            modelBuilder.Entity("Project_X.Models.SectionUser", b =>
-                {
-                    b.HasOne("Project_X.Models.Section", "Section")
-                        .WithMany("SectionUsers")
-                        .HasForeignKey("SectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Models.AppUser", "User")
-                        .WithMany("SectionUsers")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Section");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Project_X.Models.VerificationSession", b =>
                 {
                     b.HasOne("Project_X.Models.AttendanceSession", "Session")
@@ -840,8 +761,6 @@ namespace Project_X.Migrations
 
                     b.Navigation("OrganizationUsers");
 
-                    b.Navigation("SectionUsers");
-
                     b.Navigation("Sessions");
 
                     b.Navigation("VerificationSessions");
@@ -852,8 +771,6 @@ namespace Project_X.Migrations
                     b.Navigation("Halls");
 
                     b.Navigation("OrganizationUsers");
-
-                    b.Navigation("Sections");
 
                     b.Navigation("Sessions");
                 });
@@ -870,11 +787,6 @@ namespace Project_X.Migrations
             modelBuilder.Entity("Project_X.Models.Hall", b =>
                 {
                     b.Navigation("Sessions");
-                });
-
-            modelBuilder.Entity("Project_X.Models.Section", b =>
-                {
-                    b.Navigation("SectionUsers");
                 });
 
             modelBuilder.Entity("Project_X.Models.VerificationSession", b =>

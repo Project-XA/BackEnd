@@ -1,4 +1,4 @@
-﻿
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Models;
@@ -10,6 +10,7 @@ namespace Project_X.Data.Configuration
         public void Configure(EntityTypeBuilder<Organization> builder)
         {
             builder.HasKey(o => o.OrganizationId);
+            builder.Property(o => o.IsUniversity).HasDefaultValue(false);
             builder.HasMany(o => o.Sessions)
                 .WithOne(s => s.Organization)
                 .HasForeignKey(s => s.OrganizationId)

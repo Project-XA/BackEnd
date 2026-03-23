@@ -149,6 +149,7 @@ namespace Project_X
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IReportService, ReportService>();
             builder.Services.AddScoped<IOrganizationEventService, OrganizationEventService>();
+            builder.Services.AddScoped<ISectionService, SectionService>();
             builder.Services.AddSignalR();
             var app = builder.Build();
             using(var scope = app.Services.CreateScope())
@@ -156,7 +157,6 @@ namespace Project_X
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
                 await IdentityRoleIntializer.SeedRoleAsync(roleManager);
             }
-
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -168,6 +168,7 @@ namespace Project_X
             //app.UseCors("MyPolicy");
             app.UseCors("AllowSpecificOrigins");
             app.UseRateLimiter();
+            app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
             app.MapHub<OrganizationHub>("/organizationHub");

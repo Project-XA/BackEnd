@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Models.Enums;
 using Project_X.Models;
 using Project_X.Models.Enums;
@@ -16,6 +16,7 @@ namespace Models
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public List<OrganizationUser> OrganizationUsers { get; set; }
+        public List<SectionUser> SectionUsers { get; set; }
         public UserRole Role { get; set; }
     }
 }
