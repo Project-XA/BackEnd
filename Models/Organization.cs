@@ -17,5 +17,6 @@ namespace Models
         public List<AttendanceSession> Sessions { get; set; }
         public List<OrganizationUser> OrganizationUsers { get; set; }
         public List<Hall> Halls { get; set; }
+        public List<Section> Sections { get; set; }
     }
 }

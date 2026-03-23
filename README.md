@@ -27,7 +27,17 @@ This document provides a detailed reference for the backend APIs available in Pr
     - [Get Hall By ID](#get-hall-by-id)
     - [Update Hall](#update-hall)
     - [Delete Hall](#delete-hall)
-  - [4. Session APIs](#4-session-apis)
+  - [4. Section APIs (University)](#4-section-apis-university)
+    - [Create Section](#create-section)
+    - [Get Sections by Organization](#get-sections-by-organization)
+    - [Get Section by ID](#get-section-by-id)
+    - [Update Section](#update-section)
+    - [Delete Section](#delete-section)
+    - [Add Student to Section](#add-student-to-section)
+    - [Remove Student from Section](#remove-student-from-section)
+    - [Get Section Members](#get-section-members)
+    - [Join Section by Code](#join-section-by-code)
+  - [5. Session APIs](#5-session-apis)
     - [Create Session](#create-session)
     - [Get Session By ID](#get-session-by-id)
     - [Get Sessions By Hall ID](#get-sessions-by-hall-id)
@@ -36,14 +46,14 @@ This document provides a detailed reference for the backend APIs available in Pr
     - [Save Attendance](#save-attendance)
     - [Get Session Attendance](#get-session-attendance)
     - [Get Session Attendance (Internal)](#get-session-attendance-internal)
-  - [5. User APIs](#5-user-apis)
+  - [6. User APIs](#6-user-apis)
     - [Get User Statistics](#get-user-statistics)
     - [Get User Details](#get-user-details)
     - [Get User Role](#get-user-role)
-  - [6. Report APIs](#6-report-apis)
+  - [7. Report APIs](#7-report-apis)
     - [Get Session Attendance CSV](#get-session-attendance-csv)
     - [Get Session Attendance CSV (Internal)](#get-session-attendance-csv-internal)
-  - [7. Enums](#7-enums)
+  - [8. Enums](#8-enums)
     - [UserRole](#userrole)
     - [VerificationType](#verificationtype)
     - [ConnectionType](#connectiontype)
@@ -632,7 +642,254 @@ Deletes a hall by ID.
 
 ---
 
-## 4. Session APIs
+## 4. Section APIs (University)
+Base Path: `/api/Section`
+
+> **Note**: Section APIs are only available for organizations with `isUniversity: true`. Each section has a unique **SectionCode** (4-digit number) that students can use to join. Students **do not need to be members of the organization** — they belong directly to the section. A student can be in **multiple sections**.
+
+### Create Section
+Creates a new section (lab) in a university organization.
+
+- **URL**: `/`
+- **Method**: `POST`
+- **Auth**: Required (Role: `Admin`, `SuperAdmin`)
+- **Request Body**:
+  ```json
+  {
+    "organizationId": 1,        // Required
+    "sectionName": "Lab Group A" // Required
+  }
+  ```
+- **Response**:
+  - `200 OK`:
+    ```json
+    {
+      "success": true,
+      "message": "Section created successfully.",
+      "data": {
+        "sectionId": 1,
+        "sectionName": "Lab Group A",
+        "sectionCode": 4523,
+        "organizationId": 1,
+        "memberCount": 0,
+        "createdAt": "2023-10-27T10:00:00Z"
+      },
+      "errors": []
+    }
+    ```
+  - `400 Bad Request`: Organization is not a university or code generation failed.
+
+### Get Sections by Organization
+Retrieves all sections for a specific university organization.
+
+- **URL**: `/organization/{orgId}`
+- **Method**: `GET`
+- **Auth**: Required (Role: `Admin`, `SuperAdmin`)
+- **Response**:
+  - `200 OK`:
+    ```json
+    {
+      "success": true,
+      "message": "Sections retrieved successfully.",
+      "data": [
+        {
+          "sectionId": 1,
+          "sectionName": "Lab Group A",
+          "sectionCode": 4523,
+          "organizationId": 1,
+          "memberCount": 5,
+          "createdAt": "2023-10-27T10:00:00Z"
+        }
+      ],
+      "errors": []
+    }
+    ```
+  - `400 Bad Request`: Organization is not a university.
+
+### Get Section by ID
+Retrieves a specific section by its ID.
+
+- **URL**: `/{id}`
+- **Method**: `GET`
+- **Auth**: Required (Role: `Admin`, `SuperAdmin`)
+- **Response**:
+  - `200 OK`:
+    ```json
+    {
+      "success": true,
+      "message": "Section retrieved successfully.",
+      "data": {
+        "sectionId": 1,
+        "sectionName": "Lab Group A",
+        "sectionCode": 4523,
+        "organizationId": 1,
+        "memberCount": 5,
+        "createdAt": "2023-10-27T10:00:00Z"
+      },
+      "errors": []
+    }
+    ```
+  - `404 Not Found`: Section not found.
+
+### Update Section
+Updates a section's name.
+
+- **URL**: `/{id}`
+- **Method**: `PUT`
+- **Auth**: Required (Role: `Admin`, `SuperAdmin`)
+- **Request Body**:
+  ```json
+  {
+    "sectionName": "Updated Lab Name" // Required
+  }
+  ```
+- **Response**:
+  - `200 OK`:
+    ```json
+    {
+      "success": true,
+      "message": "Section updated successfully.",
+      "data": {
+        "sectionId": 1,
+        "sectionName": "Updated Lab Name",
+        "sectionCode": 4523,
+        "organizationId": 1,
+        "memberCount": 5,
+        "createdAt": "2023-10-27T10:00:00Z"
+      },
+      "errors": []
+    }
+    ```
+  - `400 Bad Request`: Validation errors.
+
+### Delete Section
+Deletes a section by ID. All student memberships in the section are removed.
+
+- **URL**: `/{id}`
+- **Method**: `DELETE`
+- **Auth**: Required (Role: `Admin`, `SuperAdmin`)
+- **Response**:
+  - `200 OK`:
+    ```json
+    {
+      "success": true,
+      "message": "Section deleted successfully.",
+      "data": null,
+      "errors": []
+    }
+    ```
+  - `400 Bad Request`: Error occurred.
+
+### Add Student to Section
+Manually adds a student to a section. The student does not need to be a member of the organization.
+
+- **URL**: `/{id}/students`
+- **Method**: `POST`
+- **Auth**: Required (Role: `Admin`, `SuperAdmin`)
+- **Request Body**:
+  ```json
+  {
+    "sectionId": 1,             // Required (also set via URL)
+    "userId": "user-guid-1"     // Required
+  }
+  ```
+- **Response**:
+  - `200 OK`:
+    ```json
+    {
+      "success": true,
+      "message": "Student added to section successfully.",
+      "data": {
+        "sectionId": 1,
+        "userId": "user-guid-1",
+        "fullName": "John Doe"
+      },
+      "errors": []
+    }
+    ```
+  - `400 Bad Request`: Student already in section or user not found.
+
+### Remove Student from Section
+Removes a student from a section.
+
+- **URL**: `/{id}/students/{userId}`
+- **Method**: `DELETE`
+- **Auth**: Required (Role: `Admin`, `SuperAdmin`)
+- **Response**:
+  - `200 OK`:
+    ```json
+    {
+      "success": true,
+      "message": "Student removed from section successfully.",
+      "data": null,
+      "errors": []
+    }
+    ```
+  - `400 Bad Request`: Student not in section.
+
+### Get Section Members
+Retrieves all students in a specific section.
+
+- **URL**: `/{id}/students`
+- **Method**: `GET`
+- **Auth**: Required (Role: `Admin`, `SuperAdmin`)
+- **Response**:
+  - `200 OK`:
+    ```json
+    {
+      "success": true,
+      "message": "Section members retrieved successfully.",
+      "data": [
+        {
+          "userId": "user-guid-1",
+          "fullName": "John Doe",
+          "email": "john@example.com",
+          "joinedAt": "2023-10-27T10:00:00Z"
+        }
+      ],
+      "errors": []
+    }
+    ```
+
+### Join Section by Code
+Allows any authenticated user to join a section using its unique SectionCode. No organization membership required.
+
+- **URL**: `/join`
+- **Method**: `POST`
+- **Auth**: Required (any authenticated user)
+- **Request Body**:
+  ```json
+  {
+    "sectionCode": 4523 // Required
+  }
+  ```
+- **Response**:
+  - `200 OK`:
+    ```json
+    {
+      "success": true,
+      "message": "Joined section successfully.",
+      "data": {
+        "sectionId": 1,
+        "sectionName": "Lab Group A",
+        "organizationId": 1
+      },
+      "errors": []
+    }
+    ```
+  - `400 Bad Request`: Invalid code or already a member.
+    ```json
+    {
+      "success": false,
+      "message": "You are already a member of this section.",
+      "data": null,
+      "errors": ["Duplicate membership"]
+    }
+    ```
+
+---
+
+## 5. Session APIs
 Base Path: `/api/Session`
 
 ### Create Session
@@ -933,7 +1190,7 @@ Retrieves the list of attendees for a specific session using JWT Authentication.
 - **Auth**: Required (Role: `Admin`, `SuperAdmin`)
 - **Response**: Same as [Get Session Attendance](#get-session-attendance)
 
-## 5. User APIs
+## 6. User APIs
 Base Path: `/api/User`
 
 ### Get User Statistics
@@ -1023,7 +1280,7 @@ Retrieves just the role of a user within a specific organization.
     }
     ```
 
-## 6. Report APIs
+## 7. Report APIs
 Base Path: `/api/Report`
 
 ### Get Session Attendance CSV
@@ -1049,7 +1306,7 @@ Downloads a CSV file containing the attendance records for a specific session us
 
 ---
 
-## 7. Enums
+## 8. Enums
 
 ### UserRole
 - `Admin`

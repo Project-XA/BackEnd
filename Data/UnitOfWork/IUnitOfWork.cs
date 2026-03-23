@@ -1,4 +1,4 @@
-﻿using Models;
+using Models;
 using Project_X.Data.Repositories;
 using Project_X.Models;
 
@@ -16,6 +16,8 @@ namespace Project_X.Data.UnitOfWork
         public IHallRepository Halls { get; }
         public IOtpRepository OTPs { get; }
         public IRepository<OrganizationEvent> OrganizationEvents { get; }
+        public ISectionRepository Sections { get; }
+        public IRepository<SectionUser> SectionUsers { get; }
         Task<int> SaveAsync();
     }
 }

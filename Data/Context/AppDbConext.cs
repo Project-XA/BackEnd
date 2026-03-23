@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using Project_X.Data.Configuration;
@@ -18,6 +18,8 @@ namespace Project_X.Data.Context
         public DbSet<Hall> Halls { get; set; }
         public DbSet<OrganizationUser> OrganizationUser { get; set; }
         public DbSet<OrganizationEvent> OrganizationEvents { get; set; }
+        public DbSet<Section> Sections { get; set; }
+        public DbSet<SectionUser> SectionUsers { get; set; }
         public AppDbConext(DbContextOptions dbContextOptions)
             : base(dbContextOptions) { }
 

@@ -1,4 +1,4 @@
-﻿using Models;
+using Models;
 using Project_X.Data.Context;
 using Project_X.Data.Repositories;
 using Project_X.Data.Repository;
@@ -19,6 +19,8 @@ namespace Project_X.Data.UnitOfWork
         public IHallRepository Halls { get; }
         public IOtpRepository OTPs { get; }
         public IRepository<OrganizationEvent> OrganizationEvents { get; }
+        public ISectionRepository Sections { get; }
+        public IRepository<SectionUser> SectionUsers { get; }
 
         public UnitOfWork(AppDbConext context)
         {
@@ -33,6 +35,8 @@ namespace Project_X.Data.UnitOfWork
             Halls = new HallRepository(_context);
             OTPs = new OtpRepository(_context);
             OrganizationEvents = new Repository<OrganizationEvent>(_context);
+            Sections = new SectionRepository(_context);
+            SectionUsers = new Repository<SectionUser>(_context);
         }
     
         public async Task<int> SaveAsync()
