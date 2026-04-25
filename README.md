@@ -10,6 +10,8 @@ This document provides a detailed reference for the backend APIs available in Pr
   - [1. Account APIs](#1-account-apis)
     - [Register SuperAdmin](#register-superadmin)
     - [Login](#login)
+    - [Student Register](#student-register)
+    - [Student Login](#student-login)
     - [Forgot Password](#forgot-password)
     - [Verify Reset Password OTP](#verify-reset-password-otp)
   - [2. Organization APIs](#2-organization-apis)
@@ -143,6 +145,106 @@ Authenticates a user and returns a JWT token. Only `Admin` and `SuperAdmin` user
       "errors": ["Access restricted."]
     }
     ```
+
+### Student Register
+Creates a new student account for a university organization. This endpoint creates an `AppUser` with role `Student` and a linked student profile that stores the `rollNumber`.
+
+- **URL**: `/student/register`
+- **Method**: `POST`
+- **Auth**: None
+- **Request Body**:
+  ```json
+  {
+    "organizationCode": 1234,
+    "fullName": "Ahmed Ali",
+    "email": "ahmed@student.edu",
+    "confirmEmail": "ahmed@student.edu",
+    "rollNumber": "20240015",
+    "password": "Password123!",
+    "confirmPassword": "Password123!"
+  }
+  ```
+- **Response**:
+  - `200 OK`:
+    ```json
+    {
+      "success": true,
+      "message": "Student registration successful",
+      "data": {
+        "student": {
+          "studentId": 1,
+          "appUserId": "e98...",
+          "organizationId": 1,
+          "organizationName": "My University",
+          "fullName": "Ahmed Ali",
+          "email": "ahmed@student.edu",
+          "rollNumber": "20240015",
+          "createdAt": "2026-04-25T15:10:52Z",
+          "updatedAt": "2026-04-25T15:10:52Z"
+        },
+        "loginToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+      },
+      "errors": []
+    }
+    ```
+  - `400 Bad Request`: Validation errors, duplicate email, duplicate roll number, or non-university organization.
+    ```json
+    {
+      "success": false,
+      "message": "Registration Failed",
+      "data": null,
+      "errors": ["Roll number already exists in this organization"]
+    }
+    ```
+  - `404 Not Found`: Invalid organization code.
+
+### Student Login
+Authenticates a student within a specific university organization and returns a JWT token plus the student profile.
+
+- **URL**: `/student/login`
+- **Method**: `POST`
+- **Auth**: None
+- **Request Body**:
+  ```json
+  {
+    "organizationCode": 1234,
+    "email": "ahmed@student.edu",
+    "password": "Password123!"
+  }
+  ```
+- **Response**:
+  - `200 OK`:
+    ```json
+    {
+      "success": true,
+      "message": "Student login successful",
+      "data": {
+        "student": {
+          "studentId": 1,
+          "appUserId": "e98...",
+          "organizationId": 1,
+          "organizationName": "My University",
+          "fullName": "Ahmed Ali",
+          "email": "ahmed@student.edu",
+          "rollNumber": "20240015",
+          "createdAt": "2026-04-25T15:10:52Z",
+          "updatedAt": "2026-04-25T15:10:52Z"
+        },
+        "loginToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+      },
+      "errors": []
+    }
+    ```
+  - `400 Bad Request`: Invalid credentials or student not linked to the specified organization.
+    ```json
+    {
+      "success": false,
+      "message": "Unauthorized",
+      "data": null,
+      "errors": ["Student does not belong to this organization."]
+    }
+    ```
+  - `404 Not Found`: Invalid organization code.
 
 ### Forgot Password
 Initiates the password reset process by sending an OTP to the user's email.
@@ -1219,6 +1321,8 @@ Retrieves attendance statistics for the authenticated user.
 ### Get User Details
 Retrieves user details and a login token within a specific organization.
 
+> **Note**: This flow checks `OrganizationUser` membership and is intended for organization members such as admins and staff. Student sign-in should use [Student Login](#student-login).
+
 - **URL**: `/get-user`
 - **Method**: `POST`
 - **Auth**: None
@@ -1257,6 +1361,8 @@ Retrieves user details and a login token within a specific organization.
 
 ### Get User Role
 Retrieves just the role of a user within a specific organization.
+
+> **Note**: This endpoint is organization-membership based. For student authentication, use [Student Login](#student-login).
 
 - **URL**: `/get-user-role`
 - **Method**: `POST`
