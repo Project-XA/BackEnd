@@ -743,7 +743,7 @@ Deletes a hall by ID.
 ## 4. Section APIs (University)
 Base Path: `/api/Section`
 
-> **Note**: Section APIs are only available for organizations with `isUniversity: true`. Each section has a unique **SectionCode** (4-digit number) that students can use to join. Students **do not need to be members of the organization** — they belong directly to the section. A student can be in **multiple sections**.
+> **Note**: Section APIs are only available for organizations with `isUniversity: true`. Students register using the **OrganizationCode** and become attached directly to the organization. There is no section join code flow, and students do not need separate section membership to attend sessions for their organization.
 
 ### Create Section
 Creates a new section (lab) in a university organization.
@@ -754,8 +754,8 @@ Creates a new section (lab) in a university organization.
 - **Request Body**:
   ```json
   {
-    "organizationId": 1,        // Required
-    "sectionName": "Lab Group A" // Required
+    "organizationId": 1,
+    "sectionName": "Lab Group A"
   }
   ```
 - **Response**:
@@ -767,15 +767,13 @@ Creates a new section (lab) in a university organization.
       "data": {
         "sectionId": 1,
         "sectionName": "Lab Group A",
-        "sectionCode": 4523,
         "organizationId": 1,
-        "memberCount": 0,
         "createdAt": "2023-10-27T10:00:00Z"
       },
       "errors": []
     }
     ```
-  - `400 Bad Request`: Organization is not a university or code generation failed.
+  - `400 Bad Request`: Organization is not a university.
 
 ### Get Sections by Organization
 Retrieves all sections for a specific university organization.
@@ -793,9 +791,7 @@ Retrieves all sections for a specific university organization.
         {
           "sectionId": 1,
           "sectionName": "Lab Group A",
-          "sectionCode": 4523,
           "organizationId": 1,
-          "memberCount": 5,
           "createdAt": "2023-10-27T10:00:00Z"
         }
       ],
@@ -819,9 +815,7 @@ Retrieves a specific section by its ID.
       "data": {
         "sectionId": 1,
         "sectionName": "Lab Group A",
-        "sectionCode": 4523,
         "organizationId": 1,
-        "memberCount": 5,
         "createdAt": "2023-10-27T10:00:00Z"
       },
       "errors": []
@@ -838,7 +832,7 @@ Updates a section's name.
 - **Request Body**:
   ```json
   {
-    "sectionName": "Updated Lab Name" // Required
+    "sectionName": "Updated Lab Name"
   }
   ```
 - **Response**:
@@ -850,9 +844,7 @@ Updates a section's name.
       "data": {
         "sectionId": 1,
         "sectionName": "Updated Lab Name",
-        "sectionCode": 4523,
         "organizationId": 1,
-        "memberCount": 5,
         "createdAt": "2023-10-27T10:00:00Z"
       },
       "errors": []
@@ -861,7 +853,7 @@ Updates a section's name.
   - `400 Bad Request`: Validation errors.
 
 ### Delete Section
-Deletes a section by ID. All student memberships in the section are removed.
+Deletes a section by ID.
 
 - **URL**: `/{id}`
 - **Method**: `DELETE`
@@ -877,113 +869,6 @@ Deletes a section by ID. All student memberships in the section are removed.
     }
     ```
   - `400 Bad Request`: Error occurred.
-
-### Add Student to Section
-Manually adds a student to a section. The student does not need to be a member of the organization.
-
-- **URL**: `/{id}/students`
-- **Method**: `POST`
-- **Auth**: Required (Role: `Admin`, `SuperAdmin`)
-- **Request Body**:
-  ```json
-  {
-    "sectionId": 1,             // Required (also set via URL)
-    "userId": "user-guid-1"     // Required
-  }
-  ```
-- **Response**:
-  - `200 OK`:
-    ```json
-    {
-      "success": true,
-      "message": "Student added to section successfully.",
-      "data": {
-        "sectionId": 1,
-        "userId": "user-guid-1",
-        "fullName": "John Doe"
-      },
-      "errors": []
-    }
-    ```
-  - `400 Bad Request`: Student already in section or user not found.
-
-### Remove Student from Section
-Removes a student from a section.
-
-- **URL**: `/{id}/students/{userId}`
-- **Method**: `DELETE`
-- **Auth**: Required (Role: `Admin`, `SuperAdmin`)
-- **Response**:
-  - `200 OK`:
-    ```json
-    {
-      "success": true,
-      "message": "Student removed from section successfully.",
-      "data": null,
-      "errors": []
-    }
-    ```
-  - `400 Bad Request`: Student not in section.
-
-### Get Section Members
-Retrieves all students in a specific section.
-
-- **URL**: `/{id}/students`
-- **Method**: `GET`
-- **Auth**: Required (Role: `Admin`, `SuperAdmin`)
-- **Response**:
-  - `200 OK`:
-    ```json
-    {
-      "success": true,
-      "message": "Section members retrieved successfully.",
-      "data": [
-        {
-          "userId": "user-guid-1",
-          "fullName": "John Doe",
-          "email": "john@example.com",
-          "joinedAt": "2023-10-27T10:00:00Z"
-        }
-      ],
-      "errors": []
-    }
-    ```
-
-### Join Section by Code
-Allows any authenticated user to join a section using its unique SectionCode. No organization membership required.
-
-- **URL**: `/join`
-- **Method**: `POST`
-- **Auth**: Required (any authenticated user)
-- **Request Body**:
-  ```json
-  {
-    "sectionCode": 4523 // Required
-  }
-  ```
-- **Response**:
-  - `200 OK`:
-    ```json
-    {
-      "success": true,
-      "message": "Joined section successfully.",
-      "data": {
-        "sectionId": 1,
-        "sectionName": "Lab Group A",
-        "organizationId": 1
-      },
-      "errors": []
-    }
-    ```
-  - `400 Bad Request`: Invalid code or already a member.
-    ```json
-    {
-      "success": false,
-      "message": "You are already a member of this section.",
-      "data": null,
-      "errors": ["Duplicate membership"]
-    }
-    ```
 
 ---
 
@@ -1216,7 +1101,7 @@ Records attendance for multiple users in a session.
 - **Validations**:
   - Session must exist
   - Session must be associated with an organization
-  - Users must be members of the organization
+  - Users must belong to the organization, either as organization members or registered students
   - Duplicate attendance is not allowed
 - **Response**:
   - `200 OK`:
@@ -1237,7 +1122,7 @@ Records attendance for multiple users in a session.
       "success": false,
       "message": "Failed to save attendance",
       "data": null,
-      "errors": ["User 'user-guid-1' is not a member of the organization"]
+      "errors": ["User 'user-guid-1' does not belong to the organization"]
     }
     }
     ```
@@ -1341,6 +1226,7 @@ Retrieves user details and a login token within a specific organization.
           "id": "e98...",
           "organizationId": "1",
           "organizationName": "My Org",
+          "isUniversity": true,
           "fullName": "John Doe",
           "userName": "johndoe",
           "email": "john@example.com",
@@ -1433,3 +1319,4 @@ Downloads a CSV file containing the attendance records for a specific session us
 ### Status
 - `Active`
 - `Inactive`
+

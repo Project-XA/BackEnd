@@ -46,6 +46,7 @@ namespace Project_X.Services
                         var userResponse = _mapper.Map<UserResponseDTO>(user);
                         userResponse.OrganizationId = organization.OrganizationId;
                         userResponse.OrganizationName = organization.OrganizationName;
+                        userResponse.IsUniversity = organization.IsUniversity;
                         var loginToken = await _authService.GenerateJwtTokenAsync(user);
                         return ApiResponse.SuccessResponse("User is retrieved successfully", new { userResponse, loginToken });
                     }
