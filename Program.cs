@@ -132,7 +132,7 @@ namespace Project_X
                 options.AddPolicy("AllowSpecificOrigins",
                     builder =>
                     {
-                        builder.WithOrigins("https://attendo-wine.vercel.app")
+                        builder.WithOrigins("https://attendo-wine.vercel.app","http://localhost:3000")
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials();

@@ -1,4 +1,4 @@
-﻿using Project_X.Models.Enums;
+using Project_X.Models.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace Project_X.Models.DTOs

@@ -1,4 +1,4 @@
-﻿using Project_X.Models.Enums;
+using Project_X.Models.Enums;
 
 namespace Project_X.Models.DTOs
 {
