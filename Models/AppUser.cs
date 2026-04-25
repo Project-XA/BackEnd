@@ -17,6 +17,7 @@ namespace Models
         public DateTime UpdatedAt { get; set; }
         public List<OrganizationUser> OrganizationUsers { get; set; }
         public List<SectionUser> SectionUsers { get; set; }
+        public Student? Student { get; set; }
         public UserRole Role { get; set; }
     }
 }

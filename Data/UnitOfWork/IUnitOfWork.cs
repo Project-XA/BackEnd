@@ -18,6 +18,7 @@ namespace Project_X.Data.UnitOfWork
         public IRepository<OrganizationEvent> OrganizationEvents { get; }
         public ISectionRepository Sections { get; }
         public IRepository<SectionUser> SectionUsers { get; }
+        public IStudentRepository Students { get; }
         Task<int> SaveAsync();
     }
 }

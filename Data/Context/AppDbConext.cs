@@ -20,6 +20,7 @@ namespace Project_X.Data.Context
         public DbSet<OrganizationEvent> OrganizationEvents { get; set; }
         public DbSet<Section> Sections { get; set; }
         public DbSet<SectionUser> SectionUsers { get; set; }
+        public DbSet<Student> Students { get; set; }
         public AppDbConext(DbContextOptions dbContextOptions)
             : base(dbContextOptions) { }
 

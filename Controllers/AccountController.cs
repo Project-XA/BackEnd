@@ -34,6 +34,27 @@ namespace Project_X.Controllers
             return BadRequest(result);
         }
 
+        [HttpPost("student/register")]
+        public async Task<IActionResult> RegisterStudent(StudentRegisterDTO registerDTO)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                return BadRequest(ApiResponse.FailureResponse("Invalid Data", errors));
+            }
+
+            var result = await _authService.RegisterStudentAsync(registerDTO);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            if (result.Message == "Organization not found")
+            {
+                return NotFound(result);
+            }
+            return BadRequest(result);
+        }
+
         [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginDTO loginDTO)
         {
@@ -47,6 +68,31 @@ namespace Project_X.Controllers
             if (result.Success)
             {
                 return Ok(result);
+            }
+            if (result.Message == "Organization not found")
+            {
+                return NotFound(result);
+            }
+            return BadRequest(result);
+        }
+
+        [HttpPost("student/login")]
+        public async Task<IActionResult> StudentLogin(StudentLoginDTO loginDTO)
+        {
+             if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                return BadRequest(ApiResponse.FailureResponse("Invalid Data", errors));
+            }
+
+            var result = await _authService.LoginStudentAsync(loginDTO);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            if (result.Message == "Organization not found")
+            {
+                return NotFound(result);
             }
             return BadRequest(result);
         }

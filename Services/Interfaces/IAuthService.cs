@@ -7,7 +7,9 @@ namespace Project_X.Services
     public interface IAuthService
     {
         Task<ApiResponse> RegisterAsync(AdminRegisterDTO registerDTO);
+        Task<ApiResponse> RegisterStudentAsync(StudentRegisterDTO registerDTO);
         Task<ApiResponse> LoginAsync(LoginDTO loginDTO);
+        Task<ApiResponse> LoginStudentAsync(StudentLoginDTO loginDTO);
         Task<ApiResponse> ForgotPasswordAsync(ForgotPasswordDTO forgotPasswordDTO);
         Task<ApiResponse> VerifyResetPasswordOTPAsync(VerifyOtpResetPasswordDto verifyDto);
         Task<string> GenerateJwtTokenAsync(AppUser user);

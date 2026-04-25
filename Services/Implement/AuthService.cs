@@ -72,6 +72,72 @@ namespace Project_X.Services
             });
         }
 
+        public async Task<ApiResponse> RegisterStudentAsync(StudentRegisterDTO registerDTO)
+        {
+            var organization = await _unitOfWork.Organizations.GetByCodeAsync(registerDTO.OrganizationCode);
+            if (organization == null)
+            {
+                return ApiResponse.FailureResponse("Organization not found", new List<string> { "Invalid Organization Code" });
+            }
+
+            if (!organization.IsUniversity)
+            {
+                return ApiResponse.FailureResponse("Invalid organization", new List<string> { "Students can only register under university organizations." });
+            }
+
+            var existingUser = await _userManager.FindByEmailAsync(registerDTO.Email);
+            if (existingUser != null)
+            {
+                return ApiResponse.FailureResponse("Registration Failed", new List<string> { "Email is already registered" });
+            }
+
+            var existingStudent = await _unitOfWork.Students.GetByOrganizationAndRollNumberAsync(organization.OrganizationId, registerDTO.RollNumber);
+            if (existingStudent != null)
+            {
+                return ApiResponse.FailureResponse("Registration Failed", new List<string> { "Roll number already exists in this organization" });
+            }
+
+            var newUser = _mapper.Map<AppUser>(registerDTO);
+            newUser.Role = UserRole.Student;
+
+            var result = await _userManager.CreateAsync(newUser, registerDTO.Password);
+            if (!result.Succeeded)
+            {
+                var errors = result.Errors.Select(e => e.Description).ToList();
+                return ApiResponse.FailureResponse("Registration Failed", errors);
+            }
+
+            var roleResult = await _userManager.AddToRoleAsync(newUser, UserRole.Student.ToString());
+            if (!roleResult.Succeeded)
+            {
+                await _userManager.DeleteAsync(newUser);
+                var errors = roleResult.Errors.Select(e => e.Description).ToList();
+                return ApiResponse.FailureResponse("Registration Failed Due to Error in Role creation", errors);
+            }
+
+            var student = new Student
+            {
+                AppUserId = newUser.Id,
+                OrganizationId = organization.OrganizationId,
+                RollNumber = registerDTO.RollNumber,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            await _unitOfWork.Students.AddAsync(student);
+            await _unitOfWork.SaveAsync();
+
+            var savedStudent = await _unitOfWork.Students.GetByAppUserIdAsync(newUser.Id);
+            var studentResponse = _mapper.Map<StudentResponseDTO>(savedStudent!);
+            var loginToken = await GenerateJwtTokenAsync(newUser);
+
+            return ApiResponse.SuccessResponse("Student registration successful", new
+            {
+                student = studentResponse,
+                loginToken
+            });
+        }
+
         public async Task<ApiResponse> LoginAsync(LoginDTO loginDTO)
         {
             var user = await _userManager.FindByEmailAsync(loginDTO.Email);
@@ -90,6 +156,42 @@ namespace Project_X.Services
                 }
             }
             return ApiResponse.FailureResponse("Invalid Email or Password", new List<string> { "Invalid Email or Password" });
+        }
+
+        public async Task<ApiResponse> LoginStudentAsync(StudentLoginDTO loginDTO)
+        {
+            var organization = await _unitOfWork.Organizations.GetByCodeAsync(loginDTO.OrganizationCode);
+            if (organization == null)
+            {
+                return ApiResponse.FailureResponse("Organization not found", new List<string> { "Invalid Organization Code" });
+            }
+
+            var user = await _userManager.FindByEmailAsync(loginDTO.Email);
+            if (user == null)
+            {
+                return ApiResponse.FailureResponse("Invalid Email or Password", new List<string> { "Invalid Email or Password" });
+            }
+
+            var isPass = await _userManager.CheckPasswordAsync(user, loginDTO.Password);
+            if (!isPass)
+            {
+                return ApiResponse.FailureResponse("Invalid Email or Password", new List<string> { "Invalid Email or Password" });
+            }
+
+            var student = await _unitOfWork.Students.GetByAppUserIdAsync(user.Id);
+            if (student == null || student.OrganizationId != organization.OrganizationId)
+            {
+                return ApiResponse.FailureResponse("Unauthorized", new List<string> { "Student does not belong to this organization." });
+            }
+
+            var loginToken = await GenerateJwtTokenAsync(user);
+            var studentResponse = _mapper.Map<StudentResponseDTO>(student);
+
+            return ApiResponse.SuccessResponse("Student login successful", new
+            {
+                student = studentResponse,
+                loginToken
+            });
         }
 
         public async Task<ApiResponse> ForgotPasswordAsync(ForgotPasswordDTO forgotPasswordDTO)

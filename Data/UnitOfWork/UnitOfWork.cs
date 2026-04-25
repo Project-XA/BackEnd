@@ -21,6 +21,7 @@ namespace Project_X.Data.UnitOfWork
         public IRepository<OrganizationEvent> OrganizationEvents { get; }
         public ISectionRepository Sections { get; }
         public IRepository<SectionUser> SectionUsers { get; }
+        public IStudentRepository Students { get; }
 
         public UnitOfWork(AppDbConext context)
         {
@@ -37,6 +38,7 @@ namespace Project_X.Data.UnitOfWork
             OrganizationEvents = new Repository<OrganizationEvent>(_context);
             Sections = new SectionRepository(_context);
             SectionUsers = new Repository<SectionUser>(_context);
+            Students = new StudentRepository(_context);
         }
     
         public async Task<int> SaveAsync()

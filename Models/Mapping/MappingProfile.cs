@@ -16,6 +16,11 @@ namespace Project_X.Models.Mapping
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
 
+            CreateMap<StudentRegisterDTO, AppUser>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
+
             CreateMap<AppUser, UserRegisterDTO>();
 
             CreateMap<Organization, CreateOrganizationDTO>();
@@ -56,6 +61,12 @@ namespace Project_X.Models.Mapping
             CreateMap<Section, SectionResponseDTO>()
                 .ForMember(dest => dest.MemberCount, opt => opt.MapFrom(src => src.SectionUsers != null ? src.SectionUsers.Count : 0));
             CreateMap<SectionUser, SectionMemberResponseDTO>()
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.User.FullName))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email));
+
+            CreateMap<Student, StudentResponseDTO>()
+                .ForMember(dest => dest.AppUserId, opt => opt.MapFrom(src => src.AppUserId))
+                .ForMember(dest => dest.OrganizationName, opt => opt.MapFrom(src => src.Organization.OrganizationName))
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.User.FullName))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email));
         }
