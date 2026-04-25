@@ -161,8 +161,11 @@ namespace Project_X.Services
             var uniqueUserIds = attendDTO.AttendanceLogs.Select(a => a.UserId).Distinct().ToList();
             var orgUsers = await _unitOfWork.OrganizationUsers.GetByOrganizationAndUsersAsync(
                 session.OrganizationId, uniqueUserIds);
+            var students = await _unitOfWork.Students.FindAllAsync(
+                s => s.OrganizationId == session.OrganizationId && uniqueUserIds.Contains(s.AppUserId));
             
             var validOrgUserIds = orgUsers.Select(ou => ou.UserId).ToHashSet();
+            var validStudentUserIds = students.Select(s => s.AppUserId).ToHashSet();
             var existingLogs = await _unitOfWork.AttendanceLogs.GetLogsBySessionAndUsersAsync(
                 attendDTO.SessionId, uniqueUserIds);
             
@@ -170,9 +173,9 @@ namespace Project_X.Services
 
             foreach (var logItem in attendDTO.AttendanceLogs)
             {
-                if (!validOrgUserIds.Contains(logItem.UserId))
+                if (!validOrgUserIds.Contains(logItem.UserId) && !validStudentUserIds.Contains(logItem.UserId))
                 {
-                    errors.Add($"User '{logItem.UserId}' is not a member of the organization");
+                    errors.Add($"User '{logItem.UserId}' does not belong to the organization");
                     continue;
                 }
 

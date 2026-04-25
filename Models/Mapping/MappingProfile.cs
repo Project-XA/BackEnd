@@ -58,8 +58,7 @@ namespace Project_X.Models.Mapping
             CreateMap<CreateSectionDTO, Section>()
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
-            CreateMap<Section, SectionResponseDTO>()
-                .ForMember(dest => dest.MemberCount, opt => opt.MapFrom(src => src.SectionUsers != null ? src.SectionUsers.Count : 0));
+            CreateMap<Section, SectionResponseDTO>();
             CreateMap<SectionUser, SectionMemberResponseDTO>()
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.User.FullName))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email));

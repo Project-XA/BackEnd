@@ -26,17 +26,5 @@ namespace Project_X.Data.Repositories
                     .ThenInclude(su => su.User)
                 .FirstOrDefaultAsync(s => s.SectionId == sectionId);
         }
-
-        public async Task<Section?> GetByCodeAsync(int sectionCode)
-        {
-            return await _context.Sections
-                .FirstOrDefaultAsync(s => s.SectionCode == sectionCode);
-        }
-
-        public async Task<bool> VerifySectionCodeAsync(int sectionCode)
-        {
-            return await _context.Sections
-                .AnyAsync(s => s.SectionCode == sectionCode);
-        }
     }
 }

@@ -9,7 +9,6 @@ namespace Project_X.Data.Configuration
         public void Configure(EntityTypeBuilder<Section> builder)
         {
             builder.HasKey(s => s.SectionId);
-            builder.HasIndex(s => s.SectionCode).IsUnique();
             builder.HasOne(s => s.Organization)
                 .WithMany(o => o.Sections)
                 .HasForeignKey(s => s.OrganizationId)
