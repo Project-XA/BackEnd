@@ -9,5 +9,6 @@ namespace Project_X.Data.Repositories
         public Task<bool> ValidateUser(int organizationId,string userId);
         public Task<List<Organization>> GetUserOrganizationsAsync(string userId);
         public Task<List<AppUser>> GetOrganizationUsersAsync(int organizationId);
+        public Task<List<AppUser>> GetAllOrganizationMembersAsync(int organizationId);
     }
 }

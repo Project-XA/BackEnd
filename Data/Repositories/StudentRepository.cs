@@ -33,5 +33,14 @@ namespace Project_X.Data.Repositories
                 .Include(s => s.Organization)
                 .FirstOrDefaultAsync(s => s.OrganizationId == organizationId && s.User.Email == email);
         }
+
+        public async Task<List<Student>> GetByOrganizationIdAsync(int organizationId)
+        {
+            return await _context.Students
+                .Include(s => s.User)
+                .Include(s => s.Organization)
+                .Where(s => s.OrganizationId == organizationId)
+                .ToListAsync();
+        }
     }
 }

@@ -46,5 +46,35 @@ namespace Project_X.Data.Repositories
                 .ToListAsync();
             return users;
         }
+
+        public async Task<List<AppUser>> GetAllOrganizationMembersAsync(int organizationId)
+        {
+            var organizationMembers = await _context.OrganizationUser
+                .Where(ou => ou.OrganizationId == organizationId)
+                .Include(ou => ou.User)
+                .Select(ou => ou.User)
+                .ToListAsync();
+
+            var students = await _context.Students
+                .Where(s => s.OrganizationId == organizationId)
+                .Include(s => s.User)
+                .Select(s => s.User)
+                .ToListAsync();
+
+            var allMembers = organizationMembers.Union(students, new AppUserEqualityComparer()).ToList();
+            return allMembers;
+        }
+    }
+    public class AppUserEqualityComparer : IEqualityComparer<AppUser>
+    {
+        public bool Equals(AppUser x, AppUser y)
+        {
+            return x?.Id == y?.Id;
+        }
+
+        public int GetHashCode(AppUser obj)
+        {
+            return obj?.Id.GetHashCode() ?? 0;
+        }
     }
 }

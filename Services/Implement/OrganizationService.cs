@@ -235,7 +235,7 @@ namespace Project_X.Services
                 return ApiResponse.FailureResponse("Organization not found.", new List<string> { "Invalid Organization ID" });
             }
 
-            var users = await _unitOfWork.Organizations.GetOrganizationUsersAsync(organizationId);
+            var users = await _unitOfWork.Organizations.GetAllOrganizationMembersAsync(organizationId);
             var userResponses = _mapper.Map<List<UserResponseDTO>>(users);
 
             return ApiResponse.SuccessResponse("Organization users retrieved successfully", userResponses);
