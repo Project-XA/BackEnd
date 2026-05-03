@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Project_X.Data.Context;
@@ -11,9 +12,11 @@ using Project_X.Data.Context;
 namespace Project_X.Migrations
 {
     [DbContext(typeof(AppDbConext))]
-    partial class AppDbConextModelSnapshot : ModelSnapshot
+    [Migration("20260503233201_AddSectionToAttendanceSession")]
+    partial class AddSectionToAttendanceSession
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -372,7 +375,7 @@ namespace Project_X.Migrations
                     b.Property<DateTime>("EndAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int?>("HallId")
+                    b.Property<int>("HallId")
                         .HasColumnType("integer");
 
                     b.Property<decimal>("Longitude")
@@ -765,7 +768,8 @@ namespace Project_X.Migrations
                     b.HasOne("Project_X.Models.Hall", "Hall")
                         .WithMany("Sessions")
                         .HasForeignKey("HallId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Models.Organization", "Organization")
                         .WithMany("Sessions")

@@ -32,7 +32,7 @@ namespace Project_X.Services
             }
 
             var user = await _userManager.FindByIdAsync(userId);
-            if (user == null || user.Role != UserRole.Admin||user.Role != UserRole.SuperAdmin)
+            if (user == null || (user.Role != UserRole.Admin && user.Role != UserRole.SuperAdmin))
             {
                 return ApiResponse.FailureResponse("Unauthorized", new List<string> { "Unauthorized Access" });
             }
@@ -48,6 +48,13 @@ namespace Project_X.Services
             }
 
             var newSession = _mapper.Map<AttendanceSession>(createSessionDTO);
+            newSession.CreatedBy = userId;
+            newSession.HallId = hall.Id;
+            newSession.SectionId = null;
+            if (newSession.CreatedAt == default)
+            {
+                newSession.CreatedAt = DateTime.UtcNow;
+            }
             await _unitOfWork.AttendanceSessions.AddAsync(newSession);
             var isSuccess = await _unitOfWork.SaveAsync();
 
@@ -68,7 +75,7 @@ namespace Project_X.Services
             }
 
             var user = await _userManager.FindByIdAsync(userId);
-            if (user == null || user.Role != UserRole.Admin||user.Role != UserRole.SuperAdmin)
+            if (user == null || (user.Role != UserRole.Admin && user.Role != UserRole.SuperAdmin))
             {
                 return ApiResponse.FailureResponse("Unauthorized", new List<string> { "Unauthorized Access user role error" });
             }
@@ -84,6 +91,13 @@ namespace Project_X.Services
             }
 
             var newSession = _mapper.Map<AttendanceSession>(createSessionDTO);
+            newSession.CreatedBy = userId;
+            newSession.SectionId = section.SectionId;
+            newSession.HallId = null;
+            if (newSession.CreatedAt == default)
+            {
+                newSession.CreatedAt = DateTime.UtcNow;
+            }
             await _unitOfWork.AttendanceSessions.AddAsync(newSession);
             var isSuccess = await _unitOfWork.SaveAsync();
 

@@ -21,6 +21,16 @@ namespace Project_X.Data.Configuration
                 .WithMany(u => u.Sessions)
                 .HasForeignKey(s => s.CreatedBy)
                 .OnDelete(DeleteBehavior.SetNull);
+            builder.HasOne(s => s.Hall)
+                .WithMany(h => h.Sessions)
+                .HasForeignKey(s => s.HallId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(false);
+            builder.HasOne(s => s.Section)
+                .WithMany(section => section.Sessions)
+                .HasForeignKey(s => s.SectionId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(false);
 
         }
     }

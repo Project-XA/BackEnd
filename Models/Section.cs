@@ -8,6 +8,7 @@ namespace Project_X.Models
         public string SectionName { get; set; }
         public int OrganizationId { get; set; }
         public Organization Organization { get; set; }
+        public List<AttendanceSession> Sessions { get; set; }
         public List<SectionUser> SectionUsers { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

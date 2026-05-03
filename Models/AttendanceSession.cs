@@ -23,7 +23,9 @@ namespace Project_X.Models
         public string NetworkBSSID { get; set; }
         public DateTime StartAt { get; set; }
         public DateTime EndAt { get; set; }
-        public int HallId { get; set; }
-        public Hall Hall { get; set; }
+        public int? HallId { get; set; }
+        public Hall? Hall { get; set; }
+        public int? SectionId { get; set; }
+        public Section? Section { get; set; }
     }
 }
