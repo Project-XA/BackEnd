@@ -64,13 +64,13 @@ namespace Project_X.Services
         {
             if (string.IsNullOrEmpty(userId))
             {
-                return ApiResponse.FailureResponse("Unauthorized", new List<string> { "Unauthorized Access" });
+                return ApiResponse.FailureResponse("Unauthorized", new List<string> { "Unauthorized Access user not found" });
             }
 
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null || user.Role != UserRole.Admin||user.Role != UserRole.SuperAdmin)
             {
-                return ApiResponse.FailureResponse("Unauthorized", new List<string> { "Unauthorized Access" });
+                return ApiResponse.FailureResponse("Unauthorized", new List<string> { "Unauthorized Access user role error" });
             }
             var section = await _unitOfWork.Sections.GetByIdAsync(createSessionDTO.SectionId);
             if (section == null)
