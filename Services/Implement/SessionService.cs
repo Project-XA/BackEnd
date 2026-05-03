@@ -60,6 +60,42 @@ namespace Project_X.Services
             var sessionResponse = _mapper.Map<SessionResponseDTO>(newSession);
             return ApiResponse.SuccessResponse("Session Created Successfully", sessionResponse);
         }
+        public async Task<ApiResponse> CreateSessionAsync(CreateSectionSessionDTO createSessionDTO, string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                return ApiResponse.FailureResponse("Unauthorized", new List<string> { "Unauthorized Access" });
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null || user.Role != UserRole.Admin)
+            {
+                return ApiResponse.FailureResponse("Unauthorized", new List<string> { "Unauthorized Access" });
+            }
+            var section = await _unitOfWork.Sections.GetByIdAsync(createSessionDTO.SectionId);
+            if (section == null)
+            {
+                return ApiResponse.FailureResponse("Section not found", new List<string> { "Invalid Section ID" });
+            }
+
+            if (section.OrganizationId != createSessionDTO.OrganizationId)
+            {
+                return ApiResponse.FailureResponse("section mismatch", new List<string> { "section does not belong to the specified organization" });
+            }
+
+            var newSession = _mapper.Map<AttendanceSession>(createSessionDTO);
+            await _unitOfWork.AttendanceSessions.AddAsync(newSession);
+            var isSuccess = await _unitOfWork.SaveAsync();
+
+            if (isSuccess < 1)
+            {
+                return ApiResponse.FailureResponse("Unsuccessful Save change", new List<string> { "Unexpected Error Happened while saving Changes" });
+            }
+            await _eventService.LogEventAsync(createSessionDTO.OrganizationId, userId, "Session Created", $"Session '{newSession.SessionName}' created.");
+
+            var sessionResponse = _mapper.Map<SectionSessionResponseDTO>(newSession);
+            return ApiResponse.SuccessResponse("Session Created Successfully", sessionResponse);
+        }
         public async Task<ApiResponse> GetSessionByIdAsync(int sessionId)
         {
             var session = await _unitOfWork.AttendanceSessions.GetByIdAsync(sessionId);
@@ -93,15 +129,30 @@ namespace Project_X.Services
             }
 
             _mapper.Map(updateSessionDTO, session);
-            // Updating StartAt and EndAt might require validation logic similar to creation if needed, 
-            // but relying on DTO validation attributes for now.
-            
+
             _unitOfWork.AttendanceSessions.Update(session);
             await _unitOfWork.SaveAsync();
 
             var sessionResponse = _mapper.Map<SessionResponseDTO>(session);
             return ApiResponse.SuccessResponse("Session updated successfully", sessionResponse);
         }
+         public async Task<ApiResponse> UpdateSessionAsync(int sessionId, UpdateSectionSessionDTO updateSessionDTO)
+        {
+            var session = await _unitOfWork.AttendanceSessions.GetByIdAsync(sessionId);
+            if (session == null)
+            {
+                return ApiResponse.FailureResponse("Session not found", new List<string> { "Invalid Session ID" });
+            }
+
+            _mapper.Map(updateSessionDTO, session);
+            
+            _unitOfWork.AttendanceSessions.Update(session);
+            await _unitOfWork.SaveAsync();
+
+            var sessionResponse = _mapper.Map<SectionResponseDTO>(session);
+            return ApiResponse.SuccessResponse("Session updated successfully", sessionResponse);
+        }
+
 
         public async Task<ApiResponse> DeleteSessionAsync(int sessionId)
         {

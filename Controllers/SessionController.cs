@@ -20,13 +20,38 @@ namespace Project_X.Controllers
         }
 
         [HttpPost("Create-Session")]
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin,SuperAdmin")]
         public async Task<IActionResult> CreateSession(CreateSessionDTO createSessionDTO)
         {
             if (!ModelState.IsValid)
             {
                 var errors = ModelState.Values
-                    .SelectMany(v=>v.Errors).Select(e=>e.ErrorMessage)
+                    .SelectMany(v => v.Errors).Select(e => e.ErrorMessage)
+                    .ToList();
+                return BadRequest(ApiResponse.FailureResponse("Invalid Data", errors));
+            }
+
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var result = await _sessionService.CreateSessionAsync(createSessionDTO, userId);
+
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            if (result.Message == "Unauthorized")
+            {
+                return Unauthorized(result);
+            }
+            return BadRequest(result);
+        }
+        [HttpPost("Create-section-session")]
+        [Authorize(Roles = "Admin,SuperAdmin")]
+        public async Task<IActionResult> CreateSession(CreateSectionSessionDTO createSessionDTO)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors).Select(e => e.ErrorMessage)
                     .ToList();
                 return BadRequest(ApiResponse.FailureResponse("Invalid Data", errors));
             }
@@ -84,16 +109,16 @@ namespace Project_X.Controllers
 
             var organization = (Organization)orgResult.Data;
             var sessionResult = await _sessionService.GetSessionByIdAsync(sessionId);
-            
+
             if (!sessionResult.Success)
             {
-                 return NotFound(ApiResponse.FailureResponse("Session not found."));
+                return NotFound(ApiResponse.FailureResponse("Session not found."));
             }
 
             var session = (SessionResponseDTO)sessionResult.Data;
             if (session.OrganizationId != organization.OrganizationId)
             {
-                 return Unauthorized(ApiResponse.FailureResponse("Access Denied: Session does not belong to this organization."));
+                return Unauthorized(ApiResponse.FailureResponse("Access Denied: Session does not belong to this organization."));
             }
 
             var result = await _sessionService.GetSessionAttendanceAsync(sessionId);
@@ -135,6 +160,25 @@ namespace Project_X.Controllers
             }
             return BadRequest(result);
         }
+        [HttpPut("section/{id}")]
+        [Authorize(Roles = "Admin,SuperAdmin")]
+        public async Task<IActionResult> UpdateSession(int id, UpdateSectionSessionDTO updateSessionDTO)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors).Select(e => e.ErrorMessage)
+                    .ToList();
+                return BadRequest(ApiResponse.FailureResponse("Invalid Data", errors));
+            }
+
+            var result = await _sessionService.UpdateSessionAsync(id, updateSessionDTO);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin,SuperAdmin")]
@@ -147,7 +191,7 @@ namespace Project_X.Controllers
             }
             return BadRequest(result);
         }
-        
+
         [HttpPost("save-attend")]
         [Authorize(Roles = "Admin,SuperAdmin")]
         public async Task<IActionResult> SaveAttend(SaveAttendDTO saveAttendDTO)

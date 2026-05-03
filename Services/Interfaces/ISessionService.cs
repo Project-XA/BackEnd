@@ -6,9 +6,11 @@ namespace Project_X.Services
     public interface ISessionService
     {
         Task<ApiResponse> CreateSessionAsync(CreateSessionDTO createSessionDTO, string userId);
+        Task<ApiResponse> CreateSessionAsync(CreateSectionSessionDTO createSessionDTO, string userId);
         Task<ApiResponse> GetSessionByIdAsync(int sessionId);
         Task<ApiResponse> GetSessionsByHallIdAsync(int hallId);
         Task<ApiResponse> UpdateSessionAsync(int sessionId, UpdateSessionDTO updateSessionDTO);
+        Task<ApiResponse> UpdateSessionAsync(int sessionId, UpdateSectionSessionDTO updateSessionDTO);
         Task<ApiResponse> DeleteSessionAsync(int sessionId);
         Task<ApiResponse> SaveAttendAsync(SaveAttendDTO attendDTO);
         Task<ApiResponse> CreateVerificationSessionAsync(CreateVerificationSessionDTO verificationDTO);

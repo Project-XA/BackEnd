@@ -41,11 +41,13 @@ namespace Project_X.Models.Mapping
             CreateMap<Hall, HallResponseDTO>().ReverseMap();
             CreateMap<Hall, UpdateHallDTO>().ReverseMap();
             CreateMap<AttendanceSession, CreateSessionDTO>().ReverseMap();
+            CreateMap<AttendanceSession, CreateSectionSessionDTO>().ReverseMap();
             CreateMap<AppUser, UserResponseDTO>().ReverseMap();
             CreateMap<UpdateOrganizationDTO, Organization>();
-            CreateMap<UpdateSessionDTO, AttendanceSession>();
-            CreateMap<UpdateSessionDTO, AttendanceSession>();
+            CreateMap<UpdateSessionDTO, AttendanceSession>().ReverseMap();
+            CreateMap<UpdateSectionSessionDTO, AttendanceSession>().ReverseMap();
             CreateMap<AttendanceSession, SessionResponseDTO>();
+            CreateMap<AttendanceSession, SectionSessionResponseDTO>();
             CreateMap<CreateVerificationSessionDTO, VerificationSession>()
                 .ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src => DateTime.UtcNow));
             

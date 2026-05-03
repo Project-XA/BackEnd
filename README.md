@@ -37,9 +37,11 @@ This document provides a detailed reference for the backend APIs available in Pr
     - [Delete Section](#delete-section)
   - [5. Session APIs](#5-session-apis)
     - [Create Session](#create-session)
+    - [Create Section Session](#create-section-session)
     - [Get Session By ID](#get-session-by-id)
     - [Get Sessions By Hall ID](#get-sessions-by-hall-id)
     - [Update Session](#update-session)
+    - [Update Section Session](#update-section-session)
     - [Delete Session](#delete-session)
     - [Save Attendance](#save-attendance)
     - [Get Session Attendance](#get-session-attendance)
@@ -946,6 +948,77 @@ Creates a new attendance session.
     }
     ```
 
+### Create Section Session
+Creates a new attendance session for a section.
+
+- **URL**: `/Create-section-session`
+- **Method**: `POST`
+- **Auth**: Required (Role: `Admin`, `SuperAdmin`)
+- **Validations**:
+  - Section must exist (validated by `sectionId`)
+  - Section must belong to the specified organization
+- **Request Body**:
+  ```json
+  {
+    "organizationId": 1,
+    "createdBy": "userid-guid",
+    "sessionName": "Section A Session",
+    "sectionName": "Section A",
+    "connectionType": "WIFI",
+    "longitude": 0,
+    "latitude": 0,
+    "allowedRadius": 50,
+    "networkSSID": "WifiName",
+    "networkBSSID": "MacAddress",
+    "startAt": "2023-10-27T10:00:00Z",
+    "endAt": "2023-10-27T12:00:00Z",
+    "sectionId": 3
+  }
+  ```
+- **Response**:
+  - `200 OK`:
+    ```json
+    {
+      "success": true,
+      "message": "Session Created Successfully",
+      "data": {
+        "sessionId": 1,
+        "organizationId": 1,
+        "createdBy": "userid-guid",
+        "sessionName": "Section A Session",
+        "createdAt": "2023-10-27T09:00:00Z",
+        "connectionType": "WIFI",
+        "longitude": 0,
+        "latitude": 0,
+        "allowedRadius": 50,
+        "networkSSID": "WifiName",
+        "networkBSSID": "MacAddress",
+        "startAt": "2023-10-27T10:00:00Z",
+        "endAt": "2023-10-27T12:00:00Z",
+        "sectionId": 3
+      },
+      "errors": []
+    }
+    ```
+  - `400 Bad Request` (Section not found):
+    ```json
+    {
+      "success": false,
+      "message": "Section not found",
+      "data": null,
+      "errors": ["Invalid Section ID"]
+    }
+    ```
+  - `400 Bad Request` (Section mismatch):
+    ```json
+    {
+      "success": false,
+      "message": "section mismatch",
+      "data": null,
+      "errors": ["section does not belong to the specified organization"]
+    }
+    ```
+
 ### Get Session By ID
 Retrieves a session by its ID.
 
@@ -1055,6 +1128,50 @@ Updates a session's details.
         "startAt": "2023-10-27T10:00:00Z",
         "endAt": "2023-10-27T12:00:00Z",
         "hallId": 1
+      },
+      "errors": []
+    }
+    ```
+
+### Update Section Session
+Updates a section session's details.
+
+- **URL**: `/section/{id}`
+- **Method**: `PUT`
+- **Auth**: Required (Role: `Admin`, `SuperAdmin`)
+- **Request Body**:
+  ```json
+  {
+    "sessionName": "Updated Section Session",
+    "connectionType": "WIFI",
+    "longitude": 0,
+    "latitude": 0,
+    "allowedRadius": 50,
+    "networkSSID": "WifiName",
+    "networkBSSID": "MacAddress",
+    "startAt": "2023-10-27T10:00:00Z",
+    "endAt": "2023-10-27T12:00:00Z",
+    "sectionId": 3
+  }
+  ```
+- **Response**:
+  - `200 OK`:
+    ```json
+    {
+      "success": true,
+      "message": "Session updated successfully",
+      "data": {
+        "sessionId": 1,
+        "sessionName": "Updated Section Session",
+        "connectionType": "WIFI",
+        "longitude": 0,
+        "latitude": 0,
+        "allowedRadius": 50,
+        "networkSSID": "WifiName",
+        "networkBSSID": "MacAddress",
+        "startAt": "2023-10-27T10:00:00Z",
+        "endAt": "2023-10-27T12:00:00Z",
+        "sectionId": 3
       },
       "errors": []
     }
