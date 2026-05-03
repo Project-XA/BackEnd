@@ -32,7 +32,7 @@ namespace Project_X.Services
             }
 
             var user = await _userManager.FindByIdAsync(userId);
-            if (user == null || user.Role != UserRole.Admin)
+            if (user == null || user.Role != UserRole.Admin||user.Role != UserRole.SuperAdmin)
             {
                 return ApiResponse.FailureResponse("Unauthorized", new List<string> { "Unauthorized Access" });
             }
@@ -68,7 +68,7 @@ namespace Project_X.Services
             }
 
             var user = await _userManager.FindByIdAsync(userId);
-            if (user == null || user.Role != UserRole.Admin)
+            if (user == null || user.Role != UserRole.Admin||user.Role != UserRole.SuperAdmin)
             {
                 return ApiResponse.FailureResponse("Unauthorized", new List<string> { "Unauthorized Access" });
             }
